@@ -1,0 +1,164 @@
+\documentclass{article}
+\author{Jonathan Dyer}
+\title{CS 1699: Privacy in the Electronic Society \\
+        \textit{Project 1 -- Side-Channel Attacks}}
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{enumitem}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{graphicx}
+
+% ============ USED FOR MY FORMAT ============
+\newtheorem{thm}{Claim}
+\providecommand{\task}[1]{\section*{Task #1}}
+\providecommand{\soln}{\textbf{Solution: }}
+\providecommand{\image}[1]{
+    \begin{center}
+        \includegraphics[width=1.0\textwidth]
+            {#1}
+    \end{center}
+}
+\providecommand{\tightlist}{
+    \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}
+}
+\providecommand{\inlinecode}{\texttt}
+
+% ============ USED FOR CODE LISTINGS ============
+\usepackage{listings}
+\usepackage[usenames,dvipsnames,svgnames]{xcolor}
+\definecolor{javagreen}{rgb}{0.25,0.5,0.35}
+\lstset{
+    basicstyle          = \footnotesize,
+    commentstyle        = \color{javagreen},
+    frame               = single,
+    language            = C,
+    stringstyle         = \color{orange},
+    numbers             = left,
+    showstringspaces    = false,
+    deletekeywords      = {len, max, format, min},
+    morekeywords        = {yield, function, then, do, to},
+    keywordstyle        = \color{blue},
+    mathescape
+}
+
+
+\begin{document}
+\maketitle
+\task{W0}
+\subsection*{Problem P: String Comparison}
+The problem chosen for this assignment is \textit{string comparison}, which involves checking one string for equality with another string.
+This includes comparing both the length and the content of each string for a mismatch. \\
+\textbf{Input:  } Two strings to be compared. \\
+\textbf{Output: } Boolean indicating if the strings are \textit{equal}.
+
+\task{W1}
+String comparison is a seemingly innocuous problem, but has big implications for privacy. Comparing values is a basic, necessary task for any system involving authentication or user input.
+An application may check if a given password is correct by comparing its string value to the stored password for a user, whether in plaintext or by comparing their hash values.
+This can occur via a custom comparison for the object being compared or by using simple string comparison (both have been done historically). For example, the Java \inlinecode{MessageDigest.isEqual} method uses a simple byte comparison to check whether two digests are equal, which is essentially the implementation of string comparison for some languages.
+
+\task{W4}
+\subsection*{Algorithm A: Break-on-Inequality}
+Firstly, let's examine \textbf{Algorithm A} so that we can understand how and why this naive algorithm varies in runtime (including for inputs of the same size).
+In the pseudocode below, first notice that if the strings are different lengths, a 'False' is returned immediately (lines 5-6).
+This clearly changes the runtime in the case of different-sized inputs, which can reveal private information as discussed below.
+More subtle is the character-by-character comparison, which breaks as soon as it finds a mismatch between the two strings (line 11). This reveals info about \textit{how} close the two strings are (or in the case of an attacker, how correct the guess was).
+
+\begin{lstlisting}
+// This method takes two strings, a and b, and returns True if they are equal, False otherwise
+def algorithm_A (String a, String b)
+
+  // First check that the lengths are the same
+  if a.length != b.length
+    return False
+
+  // Now iterate through characters, comparing one by one
+  int i = 0
+  while i < a.length
+    if a[i] != b[i]
+      return False
+    i = i+1
+
+  // If we make it all the way, they match!
+  return True
+\end{lstlisting}
+
+
+\subsection*{Results}
+Benchmarking the above code--implemented in Ruby--over 1000s of iterations gives the results displayed in the table below. Note that the "different strings of the same length" differed in the first or nearly first characters while the "close strings of the same length" differed only on the final character, for both the sentence and the hash value. The following observations (about real time taken to compare inputs) are plain from the data:
+\begin{itemize}\tightlist
+  \item Comparing different strings of the same length is an order of magnitude slower than strings of different length.
+  \item Comparing nearly-identical strings is \textit{another} order of magnitude slower.
+  \item The difference between two close strings vs. two of the same string is very small, although becomes more noticeable with a longer input.
+\end{itemize}
+
+\image{naive_results.png}
+
+This may also be clearer from the following graph of the real-time taken by each comparison type. Notice that the difference between two different strings of the same length and two close strings is more dramatic as the length increases.
+
+\image{naive_graph.png}
+
+\subsection*{Effect on Privacy}
+It is clear that this measurable difference in string comparison times can be leveraged in a timing attack against some systems that make use of such an algorithm. Specifically, if there is ever a user-facing application that requires input that must be verified, such as a username or password, some type of comparison will be involved. Consider such a system, with a typical login page where a user might enter their credentials, which will then be compared to the system's stored list of credentials using the above naive string comparison. A \textit{chosen plaintext} attack is possible against this portal, say to discover valid usernames. The attacker need only perform these steps:
+\begin{enumerate}\tightlist
+  \item For any given set $x$ of known characters and $y = {y_0 \dots y_n}$ unknown, try every possibility for a variable $a$ in the input $x || a || y_1 \dots y_n$ and some fixed filler, say \inlinecode{<underscore>}, for the rest of $y$.
+  \item Sample some dozens (or hundreds) of times on each combination, and then take the mean (or median to mitigate outliers) of the time taken to return an error/False message.
+  \item Set $a$ to be the character/byte with the greatest mean/median value, add it to $x$, and then return to step 1.
+\end{enumerate}
+By repeating this process, first to find the correct length and then to find the correct combination of characters, an attacker could potentially:
+\begin{enumerate}\tightlist
+  \item Discover valid usernames for the system.
+  \item Recover full login info (including passwords) for users.
+\end{enumerate}
+
+This may require a more sophisticated timing software than Ruby's built-in benchmarking module, but I believe that it would not be difficult to achieve such an attack, even with (for example) a basic timing program.
+
+\task{W7}
+\subsection*{Algorithm B: Constant-Time Comparison}
+Now let's examine \textbf{Algorithm B} so that we can understand how and why this revised algorithm runs in a more constant-time manner, mitigating some of the effects discussed for Algorithm A above.
+In the pseudocode below, first notice that before anything else we select a consistent number of iterations to run the byte-wise comparisons for (\inlinecode{len} in the code below, line 5)--this helps ensure that we don't reveal information about the length of the secret value (perhaps a login name), since that was an obvious and large timing difference in our naive algorithm.
+Next, consider the revised loop through our inputs (lines 9-13). Rather than breaking this loop once we find a mismatch, we continue for the specified length \inlinecode{len} (line 9).
+Then we check that both of the next characters are even valid to be compared (line 10). If so, we skip to the \inlinecode{else} (line 12) and proceed with the comparison. If either one is \textit{not} valid, we execute a "dummy" comparison to (hopefully) take the same amount of time as a real one (line 11).
+Finally, we return the resulting boolean.
+
+\begin{lstlisting}
+// This method takes two strings, a and b, and returns True if they are equal, False otherwise
+def algorithm_B (String a, String b)
+
+  // We'll assume string a is the "system string" we're comparing the user-input against
+  int len = a.length
+
+  // Now set a boolean and then iterate through characters, comparing each (even on mismatch)
+  boolean bool = (a.length == b.length)
+  for i in $0 \dots$ len                  // for every character in the fixed length
+    if a[i] == null || b[i] == null       // if we've reached the end of one string
+      bool = (a[0] == a[0]) && bool       // compare something anyways
+    else                                  // otherwise
+      bool = (a[i] == b[i]) && bool       // compare the two chars, update the boolean
+
+  return bool
+\end{lstlisting}
+
+
+\subsection*{Results}
+Benchmarking the above code--implemented in Ruby--over 1000s of iterations gives the results displayed in the table below. Note that the timing distinctions between the different types of comparison are almost entirely eliminated for shorter strings, and are statistically insignificant for longer strings/hash values. It is worth noting that comparing strings of different length still seems to be notably faster, especially for shorter inputs. This could reveal the length of a secret, given enough samples.
+
+\image{constant_results.png}
+
+The improvement is especially clear given the graph below, which shows much more even timing results across different types of input. In particular, the test on longer (hash) strings shows a slight reversal in the trend across strings of the same length--which could indicate that it would lead an attacker to make incorrect guesses (a desirabe trait).
+
+\image{constant_graph.png}
+
+\subsection*{Trade-Offs \& Design Decisions}
+There is a significant performance cost associated with making constant-time comparisons, especially when trying to obscure even the length of the secret value(s). Notice in the graphs above (INCLUDE EXTRA GRAPH BELOW THAT COMPARES THE TWO) for Naive vs. Constant Comparison that the constant-time algorithm takes nearly twice as long when comparing similar strings and \textit{several times} as long when comparing very different strings. This would be a highly significant cost on a system or web-server that may receive thousands of requests a day/hour/minute. \par
+
+Additionally, not all the timing difference for comparing strings of different length is mitigated. This could be because the 'else' conditional code (lines 12-13) is not being executed for every null character of the compared string, resulting in faster overall execution. Some amount of randomness could perhaps be introduced that would further obscure those lines of comparison. \par
+
+Finally, because the chosen amount of time is based on the \textit{first} string passed to the algorithm, we risk revealing length of secret values anyways if our implementation is known and the attacker can duplicate our system/working environment.
+
+\task{W8}
+\subsection*{Remaining Problems}
+There is still potential to leak lengths of secret values, and there may be a better way to obscure those lengths that I have not implemented above. --> THIS WILL BE EXPANDED
+
+
+\end{document}

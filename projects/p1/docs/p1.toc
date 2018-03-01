@@ -1,0 +1,29 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{Task W0}{1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{Problem P: String Comparison}{1}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{Task W1}{1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{Relevance to Privacy}{1}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{Task W4}{2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{Algorithm A: Break-on-Inequality}{2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{Results}{2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{Effect on Privacy}{3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{Task W7}{3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{Algorithm B: Constant-Time Comparison}{3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{Results}{4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{Trade-Offs \& Design Decisions}{5}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{Task W8}{5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{Remaining Problems}{5}

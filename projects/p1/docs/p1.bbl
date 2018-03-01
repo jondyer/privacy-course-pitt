@@ -1,0 +1,64 @@
+% $ biblatex auxiliary file $
+% $ biblatex version 2.6 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated as
+% required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+\entry{codahale}{online}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Malcolm}{M.}%
+     {Nick}{N.}%
+     {}{}%
+     {}{}}%
+  }
+  \keyw{timing,string,comparison,codahale,messagedigest}
+  \strng{namehash}{MN1}
+  \strng{fullhash}{MN1}
+  \field{sortinit}{2}
+  \field{addendum}{(accessed 1 Mar 2018)}
+  \field{title}{A Lesson In Timing Attacks}
+  \verb{url}
+  \verb https://codahale.com/a-lesson-in-timing-attacks/
+  \endverb
+  \field{year}{2009}
+  \warn{\item Invalid format of field 'month'}
+\endentry
+
+\entry{thisdata}{online}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Malcolm}{M.}%
+     {Nick}{N.}%
+     {}{}%
+     {}{}}%
+  }
+  \keyw{timing,string,comparison,thisdata}
+  \strng{namehash}{MN1}
+  \strng{fullhash}{MN1}
+  \field{sortinit}{2}
+  \field{addendum}{(accessed 1 Mar 2018)}
+  \field{title}{Timing Attacks against String Comparison}
+  \verb{url}
+  \verb https://thisdata.com/blog/timing-attacks-against-string-comparison/
+  \endverb
+  \field{year}{2016}
+  \warn{\item Invalid format of field 'month'}
+\endentry
+
+\lossort
+\endlossort
+
+\endinput

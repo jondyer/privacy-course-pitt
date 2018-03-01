@@ -107,10 +107,13 @@ This may also be clearer from the following graph of the clock time taken by eac
 
 \image{naive_graph.png}
 
+
+
 \subsection{Effect on Privacy}
 It is clear that this measurable difference in string comparison times can be leveraged in a timing attack against some systems that make use of such an algorithm.
 Although my first speculation was that such an attack could be used to recover a password from a system that allows multiple login attempts, I quickly recalled my computer science class on 'Privacy in the Electronic Society', wherein we learned that it is insecure and foolish to 1) transmit passwords in cleartext, or 2) store cleartext passwords on a secure system.
-So the best that a timing attack could reveal in this instance (using techniques described below) is the hash of a password, or something that is normally sent in cleartext anyways. But of course, due to the cryptographic properties of any good hash function, recovering the password itself from such information is all but impossible.
+So the best that a timing attack could reveal in this instance (using techniques described below) is the hash of a password, or something that is normally sent in cleartext anyways.
+But of course, due to the cryptographic properties of any good hash function, recovering the password itself from such information is all but impossible. \cite{hash}
 After further research and armchair rationalization, I determined that there are at least two categories of information that can be gained as a consequence of the above algorithm. The general setup for an attacker requires that:
 \begin{enumerate}\tightlist
   \item The system being attacked makes use of Algorithm A, above.
@@ -121,7 +124,7 @@ After further research and armchair rationalization, I determined that there are
 If the above conditions hold, then the system is functioning (loosely) as what is known as a \textit{verification oracle}, meaning that it will verify as correct or incorrect whatever input you provide, specifically by way of the (vulnerable) algorithm given above. This can leak information by way of a simple attack outlined here:
 
 \begin{enumerate}\tightlist
-  \item For any given set $x$ of known input characters and $y = {y_0 \dots y_n}$ unknown, try every possibility for a variable $a$ in the input $x || a || y_1 \dots y_n$ and some fixed filler, say \inlinecode{<underscore>}, for all $y_i \notequal y_0$.
+  \item For any given set $x$ of known input characters and $y = {y_0 \dots y_n}$ unknown, try every possibility for a variable $a$ in the input $x || a || y_1 \dots y_n$ and some fixed filler, say \inlinecode{<underscore>}, for all $y_i \neq y_0$.
   \item Sample some dozens (or hundreds) of times on each combination, and then take the mean (or median to mitigate outliers) of the time taken to return an error/False message.
   \item Set $a$ to be the character/byte with the greatest mean/median value, add it to $x$, and then return to step 1.
 \end{enumerate}
@@ -188,5 +191,6 @@ Finally, because the chosen amount of time is based on the \textit{first} string
 \subsection{Remaining Problems}
 There is still potential to leak lengths of secret values, and there may be a better way to obscure those lengths that I have not implemented above. --> THIS WILL BE EXPANDED
 
+\printbibliography[heading=bibintoc]
 
 \end{document}

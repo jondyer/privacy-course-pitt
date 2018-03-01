@@ -16,24 +16,127 @@
   {}
 \endgroup
 
-\entry{codahale}{online}{}
+\entry{xbox}{online}{}
   \name{author}{1}{}{%
     {{}%
-     {Malcolm}{M.}%
-     {Nick}{N.}%
+     {Contributors}{C.}%
+     {IVC~Wiki}{I.~W.}%
      {}{}%
      {}{}}%
   }
-  \keyw{timing,string,comparison,codahale,messagedigest}
-  \strng{namehash}{MN1}
-  \strng{fullhash}{MN1}
+  \strng{namehash}{CIW1}
+  \strng{fullhash}{CIW1}
   \field{sortinit}{2}
-  \field{addendum}{(accessed 1 Mar 2018)}
+  \field{addendum}{(accessed 28 Feb 2018)}
+  \field{title}{Xbox 360 Timing Attack}
+  \verb{url}
+  \verb http://beta.ivc.no/wiki/index.php/Xbox_360_Timing_Attack
+  \endverb
+  \field{year}{2007}
+  \warn{\item Invalid format of field 'month'}
+\endentry
+
+\entry{codahale}{online}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Hale}{H.}%
+     {Coda}{C.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{HC1}
+  \strng{fullhash}{HC1}
+  \field{sortinit}{2}
+  \field{addendum}{(accessed 28 Feb 2018)}
   \field{title}{A Lesson In Timing Attacks}
   \verb{url}
   \verb https://codahale.com/a-lesson-in-timing-attacks/
   \endverb
   \field{year}{2009}
+  \warn{\item Invalid format of field 'month'}
+\endentry
+
+\entry{keyczar}{online}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Lawson}{L.}%
+     {Nate}{N.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{LN1}
+  \strng{fullhash}{LN1}
+  \field{sortinit}{2}
+  \field{addendum}{(accessed 1 Mar 2018)}
+  \field{title}{Timing attack in Google Keyczar library}
+  \verb{url}
+  \verb https://rdist.root.org/2009/05/28/timing-attack-in-google-keyczar-libra
+  \verb ry/
+  \endverb
+  \field{year}{2009}
+  \warn{\item Invalid format of field 'month'}
+\endentry
+
+\entry{passhash}{article}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Ewaida}{E.}%
+     {Bashar}{B.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{EB1}
+  \strng{fullhash}{EB1}
+  \field{sortinit}{2}
+  \field{title}{Pass-the-hash attacks: Tools and Mitigation}
+  \verb{url}
+  \verb https://www.sans.org/reading-room/whitepapers/testing/pass-the-hash-att
+  \verb acks-tools-mitigation-33283
+  \endverb
+  \field{journaltitle}{SANS Institute Reading Room}
+  \field{year}{2010}
+  \warn{\item Invalid format of field 'month'}
+\endentry
+
+\entry{whitehathash}{online}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Clem}{C.}%
+     {Douglass}{D.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{CD1}
+  \strng{fullhash}{CD1}
+  \field{sortinit}{2}
+  \field{addendum}{(accessed 27 Feb 2018)}
+  \field{title}{Hash Length Extension Attacks}
+  \verb{url}
+  \verb https://www.whitehatsec.com/blog/hash-length-extension-attacks/
+  \endverb
+  \field{year}{2012}
+  \warn{\item Invalid format of field 'month'}
+\endentry
+
+\entry{xboxbook}{book}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Jonathan~Katz}{J.~K.}%
+     {Yehuda~Lindell}{Y.~L.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {CRC Press}%
+  }
+  \strng{namehash}{JKYL1}
+  \strng{fullhash}{JKYL1}
+  \field{sortinit}{2}
+  \field{isbn}{9781466570269}
+  \field{pages}{115\bibrangedash 116}
+  \field{series}{CRC Cryptography and Network Security Series}
+  \field{title}{Introduction to Modern Cryptography, Second Edition}
+  \field{year}{2014}
   \warn{\item Invalid format of field 'month'}
 \endentry
 
@@ -45,7 +148,6 @@
      {}{}%
      {}{}}%
   }
-  \keyw{timing,string,comparison,thisdata}
   \strng{namehash}{MN1}
   \strng{fullhash}{MN1}
   \field{sortinit}{2}
@@ -56,6 +158,123 @@
   \endverb
   \field{year}{2016}
   \warn{\item Invalid format of field 'month'}
+\endentry
+
+\entry{hash}{online}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Contributors}{C.}%
+     {Wikipedia}{W.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {Wikipedia, The Free Encyclopedia}%
+  }
+  \list{publisher}{1}{%
+    {Wikipedia, The Free Encyclopedia}%
+  }
+  \strng{namehash}{CW1}
+  \strng{fullhash}{CW1}
+  \field{sortinit}{9}
+  \field{addendum}{(accessed 1 Mar 2018)}
+  \field{title}{Cryptographic hash function}
+  \verb{url}
+  \verb https://en.wikipedia.org/wiki/Cryptographic_hash_function
+  \endverb
+\endentry
+
+\entry{wikiexthash}{online}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Contributors}{C.}%
+     {Wikipedia}{W.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {Wikipedia, The Free Encyclopedia}%
+  }
+  \list{publisher}{1}{%
+    {Wikipedia, The Free Encyclopedia}%
+  }
+  \strng{namehash}{CW1}
+  \strng{fullhash}{CW1}
+  \field{sortinit}{9}
+  \field{addendum}{(accessed 27 Feb 2018)}
+  \field{title}{Length extension attack}
+  \verb{url}
+  \verb https://en.wikipedia.org/wiki/Length_extension_attack
+  \endverb
+\endentry
+
+\entry{wikipasshash}{online}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Contributors}{C.}%
+     {Wikipedia}{W.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {Wikipedia, The Free Encyclopedia}%
+  }
+  \list{publisher}{1}{%
+    {Wikipedia, The Free Encyclopedia}%
+  }
+  \strng{namehash}{CW1}
+  \strng{fullhash}{CW1}
+  \field{sortinit}{9}
+  \field{addendum}{(accessed 1 Mar 2018)}
+  \field{title}{Pass the hash}
+  \verb{url}
+  \verb https://en.wikipedia.org/wiki/Pass_the_hash
+  \endverb
+\endentry
+
+\entry{wikitime}{online}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Contributors}{C.}%
+     {Wikipedia}{W.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {Wikipedia, The Free Encyclopedia}%
+  }
+  \list{publisher}{1}{%
+    {Wikipedia, The Free Encyclopedia}%
+  }
+  \strng{namehash}{CW1}
+  \strng{fullhash}{CW1}
+  \field{sortinit}{9}
+  \field{addendum}{(accessed 1 Mar 2018)}
+  \field{title}{Timing attack}
+  \verb{url}
+  \verb https://en.wikipedia.org/wiki/Timing_attack#Examples
+  \endverb
+\endentry
+
+\entry{benchmark}{online}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Generator}{G.}%
+     {Rdoc}{R.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {Ruby-doc.org}%
+  }
+  \strng{namehash}{GR1}
+  \strng{fullhash}{GR1}
+  \field{sortinit}{9}
+  \field{addendum}{(accessed 26 Feb 2018)}
+  \field{title}{Module: Benchmark (Ruby 2.5.0)}
+  \verb{url}
+  \verb https://ruby-doc.org/stdlib-2.5.0/libdoc/benchmark/rdoc/Benchmark.html
+  \endverb
 \endentry
 
 \lossort

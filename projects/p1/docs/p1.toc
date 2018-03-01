@@ -16,14 +16,20 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{Effect on Privacy}{3}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{Task W7}{3}
+\contentsline {subsubsection}{Existential information}{4}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{Algorithm B: Constant-Time Comparison}{3}
+\contentsline {subsubsection}{Secret values}{4}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{Results}{4}
+\contentsline {section}{Task W7}{5}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{Trade-Offs \& Design Decisions}{5}
+\contentsline {subsection}{Algorithm B: Constant-Time Comparison}{5}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{Task W8}{5}
+\contentsline {subsection}{Results}{6}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{Remaining Problems}{5}
+\contentsline {subsection}{Trade-Offs \& Design Decisions}{7}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{Task W8}{7}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{Remaining Problems}{7}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{References}{7}

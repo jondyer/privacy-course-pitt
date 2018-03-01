@@ -94,7 +94,7 @@ def algorithm_A (String a, String b)
 
 
 \subsection{Results}
-Benchmarking \cite{benchmark} the above code--implemented in the Ruby programming language--over 1000s of iterations gives the results displayed in the table below. Note that the "different strings of the same length" differed in the first or nearly first characters while the "close strings of the same length" differed only on the final character, for both the sentence and the hash value. The following observations (about real time taken to compare inputs) are plain from the data:
+Benchmarking \cite{benchmark} the above code -- implemented in the Ruby programming language -- over 1000s of iterations gives the results displayed in the table below. Note that the "different strings of the same length" differed in the first or nearly first characters while the "close strings of the same length" differed only on the final character, for both the sentence and the hash value. The following observations (about real time taken to compare inputs) are plain from the data:
 \begin{itemize}\tightlist
   \item Comparing different strings of the same length is an order of magnitude slower than strings of different length.
   \item Comparing nearly-identical strings is \textit{another} order of magnitude slower.
@@ -108,13 +108,12 @@ This may also be clearer from the following graph of the clock time taken by eac
 \image{naive_graph.png}
 
 
-
 \subsection{Effect on Privacy}
 It is clear that this measurable difference in string comparison times can be leveraged in a timing attack against some systems that make use of such an algorithm.
 Although my first speculation was that such an attack could be used to recover a password from a system that allows multiple login attempts, I quickly recalled my computer science class on 'Privacy in the Electronic Society', wherein we learned that it is insecure and foolish to 1) transmit passwords in cleartext, or 2) store cleartext passwords on a secure system.
 So the best that a timing attack could reveal in this instance (using techniques described below) is the hash of a password, or something that is normally sent in cleartext anyways.
-But of course, due to the cryptographic properties of any good hash function, recovering the password itself from such information is all but impossible. \cite{hash}
-After further research and armchair rationalization, I determined that there are at least two categories of information that can be gained as a consequence of the above algorithm. The general setup for an attacker requires that:
+But of course due to the cryptographic properties of any good hash function, recovering the password itself from such information is all but impossible. \cite{hash}
+After further research and armchair rationalization, I determined that there are at least \textbf{two categories} of information that can be gained as a consequence of the above algorithm. The general setup for an attacker requires that:
 \begin{enumerate}\tightlist
   \item The system being attacked makes use of Algorithm A, above.
   \item The attacker be able to choose the input to the algorithm (making this a \textit{chosen plaintext} attack).
@@ -124,25 +123,53 @@ After further research and armchair rationalization, I determined that there are
 If the above conditions hold, then the system is functioning (loosely) as what is known as a \textit{verification oracle}, meaning that it will verify as correct or incorrect whatever input you provide, specifically by way of the (vulnerable) algorithm given above. This can leak information by way of a simple attack outlined here:
 
 \begin{enumerate}\tightlist
-  \item For any given set $x$ of known input characters and $y = {y_0 \dots y_n}$ unknown, try every possibility for a variable $a$ in the input $x || a || y_1 \dots y_n$ and some fixed filler, say \inlinecode{<underscore>}, for all $y_i \neq y_0$.
-  \item Sample some dozens (or hundreds) of times on each combination, and then take the mean (or median to mitigate outliers) of the time taken to return an error/False message.
-  \item Set $a$ to be the character/byte with the greatest mean/median value, add it to $x$, and then return to step 1.
+  \item For any given set $x$ of known input characters and $y = {y_j \dots y_n}$ unknown, try every possibility for a variable $a$ in the input $x || a || y_{j+1} \dots y_n$ and some fixed filler, say \inlinecode{<underscore>}, for all $y_i \neq y_j$.
+  \item Sample some dozens of times (or more if necessary, over a network, etc.) on each combination, and then take the mean (or median to mitigate outliers) of the time taken to return an error/False message.
+  \item Set $a$ to be the character/byte with the greatest mean/median value (i.e. that takes the longest), add it to $x$, and then return to step 1 with $y = {y_{j+1} \dots y_n}$ and $a = y_{j+1}$.
 \end{enumerate}
-By repeating this process, first to find the correct length and then to find the correct combination of characters,
+By repeating this process, first to find the correct length and then to find the correct combination of characters, it is possible to discern one or both of the following two types of (private) information.
+This may require a more sophisticated timing software than Ruby's built-in benchmarking module (which I used), but I believe that it would not be difficult to achieve such an attack, even with a basic timing program.
 
-Then the system is at risk of leaking one of leaking the following two types of (private) information:
 \subsubsection{Existential information}
 This type of information is leaked when an attacker exploits the timing differences in the above algorithm
+to discover whether or not a system's stored list of information contains a given value. An attacker takes note of the typical response times for nonsense inputs and then compares them to response times for potentially legitimate input values. It is even simpler than the outline given above. An example will help to clarify:
+\begin{itemize}\tightlist
+  \item There is a web application called Foo Services that allows users to create accounts and login with an email address and password. It turns out that Foo uses Algorithm A to check the input email against valid emails to determine if such an account exists.
+  \item The attacker, Mallory, creates an account with Foo Services. Mallory notices that when she mistypes her email in the login form, the Foo site displays an error: \inlinecode{Invalid username or password.}
+  \item Mallory wants to discover if any of her friends have an account with Foo Services, so she follows the attack format given above, but instead of testing combinations of characters she simply cycles through her list of known email contacts, testing each several times (or dozens, or hundreds) and recording the average/median time that each takes to return the error message (obviously she doesn't know the password for any of their accounts, so she leaves that field blank for every attempt, or enters in an identical filler password for each attempt).
+  \item Finally, Mallory enters her own email address (with the wrong password) and again tests several times to find the average/median time taken for a \textit{valid} account.
+  \item According to the results section above, with enough samples Mallory should be able to tell which emails correspond to extant accounts. How? She can do this by noticing a (close to linear) boundary between those accounts that returned an error message more quickly and those accounts (including her own) which took longer. There may be some diffusion if some of the email addresses were similar to real accounts, but even that relationship should be distinguishable according to the results above.
+  \item At this point Mallory has discovered which of her friends have accounts with Foo Services (with the email addresses she is aware of). She may leverage this information to perform a more targeted attack on one account (perhaps involving the password), or if Foo Services provides a sensitive or embarassing service, then the existence information itself is enough to compromise that individual's privacy.
+\end{itemize}
 
+Some variant of this attack is applicable in many circumstances. Some examples include checking "forgot my password" email tokens, testing answers to "security questions", or login forms as above. \cite{thisdata} Note that an attack similar to this could be perpetrated on older Unix systems, whose \inlinecode{login} program had a timing variation (execution of the \inlinecode{crypt} function) that depended on the string being recognized as a username. Combined with a dictionary attack on passwords, this could compromise the security of a system. \cite{wikitime} \\
+  \\
+This attack seems somewhat trivial, and perhaps only damaging in special circumstances. An extension of it that utilizes the full power of the attack outline first described would allow discovery of values that are associated with user information but typically hidden from users or inaccessible to outside attackers. It is this variant that we turn to next.
 
-
-Specifically, if there is ever a user-facing application that requires input that must be verified, such as a username or password, some type of comparison will be involved. Consider such a system, with a typical login page where a user might enter their credentials, which will then be compared to the system's stored list of credentials using the above naive string comparison. A \textit{chosen plaintext} attack is possible against this portal, say to discover valid usernames. The attacker need only perform these steps:
+\subsubsection{Secret values}
+This type of information is revealed when an attacker follows the iterative attack outline given previously. The examples I discuss all refer to hash values being uncovered, but there may be other applications I haven't considered or listed here. \\
+  \\
+  Suppose that there is a system, perhaps another web-based service, that authenticates users according to some keyed hash--a MAC or HMAC value for instance. This could be to authenticate a session cookie in a web browser \cite{codahale}, or to verify the author of some firmware for a system upgrade, or any other scenario wherein the hash of a password is used to confirm an identity. Also suppose that the three prerequisites defined at the beginning of this section all hold in relation to this hash value. That is:
+  \begin{enumerate}\tightlist
+    \item The system being attacked makes use of Algorithm A to compare the given authenticating hash value with the expected value.
+    \item The attacker is able to choose the hash that is passed to the system to be verified.
+    \item The system informs the user (attacker) of the results of that comparison in some way.
+  \end{enumerate}
+In other words, the system is functioning as a hash verification oracle for the attacker, who can pass arbitrary plaintext data along with a hash and in return find out whether or not they should "go together" (in the context of the system in question).
+Thus, the attacker might the more advanced character-by-character attack that we outlined before to retrieve the corresponding hash for a given input data. It is provided again for convenience:
 \begin{enumerate}\tightlist
-  \item Discover valid usernames for the system.
-  \item Recover full login info (including passwords) for users.
+  \item For any given set $x$ of known input characters and $y = {y_j \dots y_n}$ unknown, try every possibility for a variable $a$ in the input $x || a || y_{j+1} \dots y_n$ and some fixed filler, say \inlinecode{<underscore>}, for all $y_i \neq y_j$.
+  \item Sample some dozens of times (or more if necessary, over a network, etc.) on each combination, and then take the mean (or median to mitigate outliers) of the time taken to return an error/False message.
+  \item Set $a$ to be the character/byte with the greatest mean/median value (i.e. that takes the longest), add it to $x$, and then return to step 1 with $y = {y_{j+1} \dots y_n}$ and $a = y_{j+1}$.
+\end{enumerate}
+Now, retrieval of such a hash alone may not be explicitly detrimental to privacy, since (as mentioned before) it does not enable the recovery of a preimage/password--at least for any hash function worth its "salt" (pun intended). \textbf{However}, certain attacks are facilitated specifically by having the hash of a value. Three particular examples are briefly described below, and further references are given.
+\begin{enumerate}
+  \item A straightforward attack known as "hash length extension" \cite{whitehathash} allows an attacker to falsely authenticate an "extension" of his choosing. This attack is valid for all Merkle-Damgard based hash algorithms, even for keyed hashes when the key is concatenated to the message (rather than an HMAC). A simple example is given at \cite{wikiexthash}
+  \item One attack, known as 'pass-the-hash', provides authentication to a system or service without the password for a given user, but just the hash. It applies on all systems using either the NTLM protocol or LanMan hash to authenticate users to the system. \cite{wikipasshash} Newer operating systems have disabled compromised versions of these protocols by default, but some of them continue to be used by third-party developers. If an attacker can acquire such a hash, then it would be possible to impersonate a user via a remote protocol such as SMB, FTP, HTTP, or others. The attack may be more sophisticated than our previous examples. Further reading: \cite{passhash}
+  \item Finally, and perhaps most \textbf{notably}, an actual timing attack involving hash-based authentication and string comparison was used to bypass a security measure in the Xbox 360 and modify system software (thereby enabling the running of custom software on the machine). This attack worked by exploiting time differences in verifying valid MAC values for kernel updates: for each valid byte in the hash, the system would reject about 2.2 milliseconds more slowly than an invalid byte in the equivalent position, enabling \textit{exactly our attack outlined above} to find a valid hash value. Details of this attack are presented in \cite{xbox}, and this and other MAC verification comparison timing attacks are mentioned in \cite{xboxbook}
 \end{enumerate}
 
-This may require a more sophisticated timing software than Ruby's built-in benchmarking module, but I believe that it would not be difficult to achieve such an attack, even with (for example) a basic timing program.
+There are other examples and resources besides the above elucidating the possibilities resulting from string comparison inconsistency. For example the popular crypto library developed by Google, known as Keyczar, fell prey to this problem in their HMAC verification implementation \cite{keyczar}, thus it is not unheard of even in well-developed libraries.
 
 \section{Task W7}
 \subsection{Algorithm B: Constant-Time Comparison}

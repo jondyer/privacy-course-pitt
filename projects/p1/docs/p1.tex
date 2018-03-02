@@ -162,14 +162,16 @@ Thus, the attacker might the more advanced character-by-character attack that we
   \item Sample some dozens of times (or more if necessary, over a network, etc.) on each combination, and then take the mean (or median to mitigate outliers) of the time taken to return an error/False message.
   \item Set $a$ to be the character/byte with the greatest mean/median value (i.e. that takes the longest), add it to $x$, and then return to step 1 with $y = {y_{j+1} \dots y_n}$ and $a = y_{j+1}$.
 \end{enumerate}
-Now, retrieval of such a hash alone may not be explicitly detrimental to privacy, since (as mentioned before) it does not enable the recovery of a preimage/password--at least for any hash function worth its "salt" (pun intended). \textbf{However}, certain attacks are facilitated specifically by having the hash of a value. Three particular examples are briefly described below, and further references are given.
+Now, retrieval of such a hash alone may not be explicitly detrimental to privacy, since (as mentioned before) it does not enable the recovery of a preimage/password -- at least for any hash function worth its "salt" (pun intended). \textbf{However}, certain attacks are facilitated specifically by having the hash of a value. Three particular examples are briefly described below, and further references are given.
 \begin{enumerate}
-  \item A straightforward attack known as "hash length extension" \cite{whitehathash} allows an attacker to falsely authenticate an "extension" of his choosing. This attack is valid for all Merkle-Damgard based hash algorithms, even for keyed hashes when the key is concatenated to the message (rather than an HMAC). A simple example is given at \cite{wikiexthash}
-  \item One attack, known as 'pass-the-hash', provides authentication to a system or service without the password for a given user, but just the hash. It applies on all systems using either the NTLM protocol or LanMan hash to authenticate users to the system. \cite{wikipasshash} Newer operating systems have disabled compromised versions of these protocols by default, but some of them continue to be used by third-party developers. If an attacker can acquire such a hash, then it would be possible to impersonate a user via a remote protocol such as SMB, FTP, HTTP, or others. The attack may be more sophisticated than our previous examples. Further reading: \cite{passhash}
-  \item Finally, and perhaps most \textbf{notably}, an actual timing attack involving hash-based authentication and string comparison was used to bypass a security measure in the Xbox 360 and modify system software (thereby enabling the running of custom software on the machine). This attack worked by exploiting time differences in verifying valid MAC values for kernel updates: for each valid byte in the hash, the system would reject about 2.2 milliseconds more slowly than an invalid byte in the equivalent position, enabling \textit{exactly our attack outlined above} to find a valid hash value. Details of this attack are presented in \cite{xbox}, and this and other MAC verification comparison timing attacks are mentioned in \cite{xboxbook}
+  \item A straightforward attack known as "hash length extension" \cite{whitehathash} allows an attacker to falsely authenticate an "extension" of his choosing. This attack is valid for all Merkle-Damgard based hash algorithms, even for keyed hashes when the key is concatenated to the message (rather than an HMAC). A simple example is given at \cite{wikiexthash}.
+  \item One attack, known as 'pass-the-hash', provides authentication to a system or service without the password for a given user, but just the hash. It applies on all systems using either the NTLM protocol or LanMan hash to authenticate users to the system. \cite{wikipasshash} Newer operating systems have disabled compromised versions of these protocols by default, but some of them continue to be used by third-party developers. If an attacker can acquire such a hash, then it would be possible to impersonate a user via a remote protocol such as SMB, FTP, HTTP, or others. The attack may be more sophisticated than our previous examples. Further reading: \cite{passhash}.
+  \item Finally, and perhaps most \textbf{notably}, an actual timing attack involving hash-based authentication and string comparison was used to bypass a security measure in the Xbox 360 and modify system software (thereby enabling the running of custom software on the machine). This attack worked by exploiting time differences in verifying valid MAC values for kernel updates: for each valid byte in the hash, the system would reject about 2.2 milliseconds more slowly than an invalid byte in the equivalent position, enabling \textit{exactly our attack outlined above} to find a valid hash value. Details of this attack are presented in \cite{xbox}, and this and other MAC verification comparison timing attacks are mentioned in \cite{xboxbook}.
 \end{enumerate}
 
 There are other examples and resources besides the above elucidating the possibilities resulting from string comparison inconsistency. For example the popular crypto library developed by Google, known as Keyczar, fell prey to this problem in their HMAC verification implementation \cite{keyczar}, thus it is not unheard of even in well-developed libraries.
+
+\pagebreak
 
 \section{Task W7}
 \subsection{Algorithm B: Constant-Time Comparison}
@@ -199,7 +201,7 @@ def algorithm_B (String a, String b)
 
 
 \subsection{Results}
-Benchmarking the above code--implemented in Ruby--over 1000s of iterations gives the results displayed in the table below. Note that the timing distinctions between the different types of comparison are almost entirely eliminated for shorter strings, and are statistically insignificant for longer strings/hash values. It is worth noting that comparing strings of different length still seems to be notably faster, especially for shorter inputs. This could reveal the length of a secret, given enough samples.
+Benchmarking the above code -- implemented in Ruby -- over 1000s of iterations gives the results displayed in the table below. Note that the timing distinctions between the different types of comparison are almost entirely eliminated for shorter strings, and are statistically insignificant for longer strings/hash values. It is worth noting that comparing strings of different length still seems to be notably faster, especially for shorter inputs. This could reveal the length of a secret, given enough samples.
 
 \image{constant_results.png}
 
@@ -208,15 +210,28 @@ The improvement is especially clear given the graph below, which shows much more
 \image{constant_graph.png}
 
 \subsection{Trade-Offs \& Design Decisions}
-There is a significant performance cost associated with making constant-time comparisons, especially when trying to obscure even the length of the secret value(s). Notice in the graphs above (INCLUDE EXTRA GRAPH BELOW THAT COMPARES THE TWO) for Naive vs. Constant Comparison that the constant-time algorithm takes nearly twice as long when comparing similar strings and \textit{several times} as long when comparing very different strings. This would be a highly significant cost on a system or web-server that may receive thousands of requests a day/hour/minute. \par
+There is a significant performance cost associated with making constant-time comparisons, especially when trying to obscure even the length of the secret value(s). Notice in the comparison graph below for Naive vs. Constant Comparison that the constant-time algorithm takes nearly twice as long when comparing similar strings and \textit{several times} as long when comparing very different strings. This would be a highly significant cost on a system or web-server that may receive thousands of requests a day/hour/minute. \par
+
+\image{alg_perf.png}
 
 Additionally, not all the timing difference for comparing strings of different length is mitigated. This could be because the 'else' conditional code (lines 12-13) is not being executed for every null character of the compared string, resulting in faster overall execution. Some amount of randomness could perhaps be introduced that would further obscure those lines of comparison. \par
 
 Finally, because the chosen amount of time is based on the \textit{first} string passed to the algorithm, we risk revealing length of secret values anyways if our implementation is known and the attacker can duplicate our system/working environment.
+An alternative to this would be to always go with the longer string, but that might open up the algorithm to DOS (denial-of-service) attacks, where the attacker simply passes excessive input. This could be checked for, but length information could be revealed by passing very short arguments and working up to the secret string length. On the other hand, if we choose to always go with the shorter string, the inverse process would also reveal lengths.
+One solution to this problem may be to choose a random \inlinecode{len} value within an acceptable range and iterate for that many bytes (but this may not mitigate all leakage). \\
 
 \section{Task W8}
 \subsection{Remaining Problems}
-There is still potential to leak lengths of secret values, and there may be a better way to obscure those lengths that I have not implemented above. --> THIS WILL BE EXPANDED
+There is still potential to leak lengths of secret values (as mentioned in the trade-offs section). There are likely better ways to obscure those lengths that I have not implemented above, without sacrificing quite as much in performance. One option is randomizing the number of byte-comparison iterations as suggested above. However, it is plain that there will always be a performance cost associated with implementing a constant-time algorithm (since we can only come \textit{up} to the slowest time, rather than decreasing everything else).\\
+ \\
+It is also possible that the very timing attack described above could work with my new and improved algorithm, perhaps with more samples. This would require a more detailed and granular timing software, probably written in a lower-level language (e.g. C), but would almost certainly still be possible for a dedicated attacker -- especially given the comparison graph above, which still reveals some variation.\\
+ \\
+It is clear that ensuring no information is leaked by a string comparison algorithm is a nontrivial task. We've learned not only that, but that this task is in fact important to securing applications and systems that involve private information. Better implementations should be (and are more frequently) included in complete and well-tested cryptographic libraries.
+
+\bigskip
+\bigskip
+\bigskip
+\bigskip
 
 \printbibliography[heading=bibintoc]
 

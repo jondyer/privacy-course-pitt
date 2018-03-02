@@ -20,16 +20,16 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsubsection}{Secret values}{4}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{Task W7}{5}
+\contentsline {section}{Task W7}{6}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{Algorithm B: Constant-Time Comparison}{5}
+\contentsline {subsection}{Algorithm B: Constant-Time Comparison}{6}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{Results}{6}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{Trade-Offs \& Design Decisions}{7}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{Task W8}{7}
+\contentsline {section}{Task W8}{8}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{Remaining Problems}{7}
+\contentsline {subsection}{Remaining Problems}{8}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{References}{7}
+\contentsline {section}{References}{9}

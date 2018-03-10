@@ -212,7 +212,11 @@ The improvement is especially clear given the graph below, which shows much more
 \subsection{Trade-Offs \& Design Decisions}
 There is a significant performance cost associated with making constant-time comparisons, especially when trying to obscure even the length of the secret value(s). Notice in the comparison graph below for Naive vs. Constant Comparison that the constant-time algorithm takes nearly twice as long when comparing similar strings and \textit{several times} as long when comparing very different strings. This would be a highly significant cost on a system or web-server that may receive thousands of requests a day/hour/minute. \par
 
-\image{alg_perf.png}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]
+        {alg_perf.png}
+\end{center}
+
 
 Additionally, not all the timing difference for comparing strings of different length is mitigated. This could be because the 'else' conditional code (lines 12-13) is not being executed for every null character of the compared string, resulting in faster overall execution. Some amount of randomness could perhaps be introduced that would further obscure those lines of comparison. \par
 
@@ -228,10 +232,7 @@ It is also possible that the very timing attack described above could work with 
  \\
 It is clear that ensuring no information is leaked by a string comparison algorithm is a nontrivial task. We've learned not only that, but that this task is in fact important to securing applications and systems that involve private information. Better implementations should be (and are more frequently) included in complete and well-tested cryptographic libraries.
 
-\bigskip
-\bigskip
-\bigskip
-\bigskip
+\pagebreak
 
 \printbibliography[heading=bibintoc]
 

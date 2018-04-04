@@ -12,8 +12,7 @@
 \addbibresource{p2.bib}
 
 % ============ USED FOR MY FORMAT ============
-\newtheorem{thm}{Claim}
-\providecommand{\task}[1]{\section*{Task #1}}
+\providecommand{\task}[1]{\section{Task #1}}
 \providecommand{\soln}{\textbf{Solution: }}
 \providecommand{\image}[1]{
     \begin{center}
@@ -25,6 +24,7 @@
     \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}
 }
 \providecommand{\inlinecode}{\texttt}
+\providecommand{\RT}{\textbf{RT}}
 
 % ============ USED FOR CODE LISTINGS ============
 \usepackage{listings}
@@ -34,7 +34,7 @@
     basicstyle          = \footnotesize,
     commentstyle        = \color{javagreen},
     frame               = single,
-    language            = C,
+    language            = XML,
     stringstyle         = \color{orange},
     numbers             = left,
     showstringspaces    = false,
@@ -52,18 +52,52 @@
 
 \tableofcontents
 
-\section{Task W0}
-\subsection{Problem P: String Comparison}
-The problem chosen for this assignment is \textit{string comparison}, which involves checking one string for equality with another string.
-This includes comparing both the \textbf{length} and the \textbf{content} of each string for a mismatch. \\
-\textbf{Input:  } Two strings to be compared. \\
-\textbf{Output: } Boolean indicating if the strings are \textit{equal}.
+\task{W0}
+\subsection{\RT_0: Role-based Trust management with attributes}
+The access-control language I selected for this project is a simplified variant of a family of expressive languages known as \RT, which is short for \textit{\textbf{R}ole-based \textbf{T}rust-management}.
+In spite of the name, the \RT family is actually an extension of role-based access control (RBAC) known as \textit{attribute}-based access control (ABAC).
+It fulfills all of the desirable traits mentioned in \cite{RTmain}, including delegation of attribute authority, inference of attributes, and more.
+By allowing explicit subject abstraction and specific attribute assignment to those subjects, the system provides the same functionality that roles do via selection by attributes and intersection of attributes along with even greater flexibility and expressiveness.
+The language utilized here is based on a combination of \RT_0 and \RT_2, and functions as follows: \\
+\begin{itemize}
+  \item The primary structures in this framework are \textit{entities} (or principals), \textit{subjects} (or users), \textit{roles} (which contain rights or permissions), and \textit{objects} (or resources).
+  \item \textbf{Entities} are simply the organizations or systems that issue credentials (i.e. assign roles to users). By explicitly abstracting entities, the \RT framework allows for localized roles, as well as more extensive delegation.
+  \item \textbf{Subjects} are the users or agents in the system. They may have one or more roles that provide them with permissions (or authorized actions) for accessing objects in the specified way.
+  \item \textbf{Roles} are a convenient way of grouping permissions that may be assigned to subjects. Roles may be hierarchical--if a role dominates another, then it has every permission the other role has. This helps reduce the number of roles and relationships that have to be dealt with in the system. Role assignment may be achieved by specifying subject attributes.
+  \item \textbf{Objects} are the elements whose access is being controlled by this entire schema. They may be grouped by attribute as well, allowing flexible and powerful specification of permissions.
+  \item Each structure accepts descriptive \textit{attributes} that enable powerful specification of policies based on any desired combination of subject, role, or object attributes. This, in conjunction with the outline above, facilitates the following features (among others): \\
+  \begin{enumerate}
+    \item \textbf{Indirection}: Because we can specify policies according to attributes, we may assign i) a set of permissions (i.e. a role or multiple roles), to ii) a set of users, over iii) a set of objects, as long as those sets can be well-defined or uniquely specified (i.e. all elements in the desired set must share an attribute that specifies exactly that set).
+    \item \textbf{Delegation}: Different entities that assign roles (within their domain) may easily defer to the authority of another entity for checking role membership. That is to say, if organization $A$ defines role $r_1$, it is simple to write a policy that includes into $r_1$ all members of role $r_2$ from some other organization $B$ as well. This is also referred to as 'delegation of attribute authority', meaning that if $B$ says that some subject has attribute $r_2$, then $A$ says it has attribute $r_1$ (here speaking of roles as attributes of users). Details of how this is done are given in the next section.
+    \item \textbf{Role Hierarchy}: Roles may inherit permissions from other roles given by the same entity. This is a variant of delegation, in a sense allowing an organization to delegate authority over some role attribute to that same organization under another role attribute. Thus, role management is simplified and duplication is reduced.
+    \item \textbf{Attribute Intersection}: Support of multiple attributes on any given element in the system also allows specification of policies by intersection of attributes. For instance, it is possible to specify an action that is allowed only for users who are in the intersection of multiple roles (i.e. users that have each of those roles).
+    \item \textbf{Logical Objects}: Inspired by \RT_2, the current variation of this framework also supports collections of objects, known as Object Groups, which allows addition by attribute and assignment of permissions respecting objects \textit{en masse}. In other words, it is possible to define a role with an access mode and an entire group of logically-related objects (via attributes) rather than just one object at a time.
+  \end{enumerate}
+\end{itemize}
+It is important to note that there are many other extensions and variations in the \RT language family, and the current iteration was chosen as a convenient balance between expressiveness and feasibility for the purposes of the current project. Many other features are possible within the \RT framework, such as parameterization of attributes, threshold policies, and more. \par
+Further, it is important to note that the original specification of \RT also included details regarding the issue of \textit{common vocabularies} across entities. This issue of vocabularies or namespaces is dealt with via \textit{application domain specification documents (ADSDs)}, but was ommitted here for brevity's sake, and because it is not relevant to the ideas being explored. For more information however, and generally for a great amount of detail regarding the \RT family of languages, see \cite{RTmain} and \cite{RTold}.
+
 
 \section{Task W1}
-\subsection{Relevance to Privacy}
+\subsection{Overview of Syntax and Policy File Format}
+The syntax chosen to write policy files for the above language is straightforward and designed for maximal ease and clarity. It is encoded in XML, and comprises two primary sections in every entity for which policies are being defined: 1) Data, and 2) Policies. \par
+\textbf{Data} is where all elements of the system are specified, and includes the following: \\
+\begin{itemize}
+  \item A full definition of any objects in the system, including object groups and any attributes associated with them.
+  \item A definition of all roles and their corresponding permissions, including all objects/object groups those roles affect and any role hierarchy that exists natively (independent of any particular policy).
+  \item Specification of all subjects or users given credentials (i.e. assigned roles) in the system, with all relevant attributes included.
+\end{itemize}
+\textbf{Policies} is the section where any of the extra features or relationships are defined. Although some of the basic access policies are implicitly encoded in the Data section, more advanced relationships are expressed here, including: \\
+\begin{itemize}
+  \item Delegation of attribute or other authority.
+  \item Access that relies on attribute intersection.
+  \item Any attribute inference or other complex relationships.
+\end{itemize}
 
-String comparison has big implications in privacy for such a seemingly innocuous problem. Comparing values is a basic, necessary task for any system involving authentication or user input, which includes most (if not all) privacy-related services. This is especially true of web apps, and string comparison has been mentioned as a potential point of weakness on a number of online resources (more on how this weakness is exploited later). \cite{thisdata} \\
-  \\
+Thus an overall outline of the policy file may look like this: \\
+\begin{lstlisting}
+
+\end{lstlisting}
 For example, an application may check if a username exists or a given password is correct by comparing its string value to the stored password for a user, whether in plaintext (unlikely for passwords) or by comparing their hash values. This typically occurs via a custom comparison for the object in question (potentially still timing sensitive!) or by using simple string comparison (both have been done historically). \cite{codahale} For example, the Java \inlinecode{MessageDigest.isEqual} method uses a simple byte comparison to check whether two digests are equal, which is essentially the implementation of string comparison for some languages.
 
 \section{Task W3}

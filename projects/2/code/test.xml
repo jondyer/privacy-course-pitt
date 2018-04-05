@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!-- The <root> element simply contains everything and exists for parsing convenience -->
+<root>
+    <entity name="Entity 1">
+        <data>
+            <objects>
+                <objectGroup shape="flat">
+                  <name>Files</name>
+                </objectGroup>
+                <object description="This object is in the group 'Files'">
+                    <group>Files</group>
+                    <name>testObjectInGroup.file</name>
+                </object>
+                <object description="This object has no group" shape="round">
+                    <name>testObject.file</name>
+                </object>
+            </objects>
+            <roles>
+                <role description="Everyone gets put into this role">
+                    <name>Member</name>
+                    <permission description="Read rights for all Members">
+                        <type>Read</type>
+                        <target type="objectGroup">Files</target>
+                        <target type="object">testObject.file</target>
+                    </permission>
+                    <permission>
+                        <type>Write</type>
+                        <target type="object">testObject.file</target>
+                    </permission>
+                </role>             <!-- End role 'Member' -->
+            </roles>
+            <subjects>
+                <subjectGroup description="This group is for Pleibs, and all Pleibs become Members">
+                    <name>Pleibs</name>
+                    <role>Member</role>
+                </subjectGroup>
+                <subject weight="120">
+                    <name>Alice</name>
+                    <group>Pleibs</group>
+                    <role>Member</role>
+                </subject>
+            </subjects>
+        </data>
+        <policies>
+        None           <!-- All specific policies go here -->
+        </policies>
+    </entity>
+</root>

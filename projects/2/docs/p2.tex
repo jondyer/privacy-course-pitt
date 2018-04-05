@@ -21,7 +21,7 @@
     \end{center}
 }
 \providecommand{\tightlist}{
-    \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}
+    \setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}
 }
 \providecommand{\inlinecode}{\texttt}
 \providecommand{\RT}{\textbf{RT}}
@@ -30,18 +30,28 @@
 \usepackage{listings}
 \usepackage[usenames,dvipsnames,svgnames]{xcolor}
 \definecolor{javagreen}{rgb}{0.25,0.5,0.35}
+\lstdefinelanguage{XML}
+{
+  basicstyle=\ttfamily\footnotesize,
+  morestring=[b]",
+  moredelim=[s][\bfseries\color{Maroon}]{<}{\ },
+  moredelim=[s][\bfseries\color{Maroon}]{</}{>},
+  moredelim=[l][\bfseries\color{Maroon}]{/>},
+  moredelim=[l][\bfseries\color{Maroon}]{>},
+  morecomment=[s]{<?}{?>},
+  morecomment=[s]{<!--}{-->},
+  commentstyle=\color{DarkOliveGreen},
+  stringstyle=\color{blue},
+  identifierstyle=\color{red}
+}
+
 \lstset{
-    basicstyle          = \footnotesize,
-    commentstyle        = \color{javagreen},
-    frame               = single,
-    language            = XML,
-    stringstyle         = \color{orange},
-    numbers             = left,
-    showstringspaces    = false,
-    deletekeywords      = {len, max, format, min},
-    morekeywords        = {yield, function, then, do, to},
-    keywordstyle        = \color{blue},
-    mathescape
+  frame               = single,
+  language            = XML,
+  numbers             = left,
+  showstringspaces    = false,
+  keywordstyle        = \color{blue},
+  mathescape
 }
 
 \setcounter{secnumdepth}{0} % sections are level 1
@@ -50,7 +60,11 @@
 \begin{document}
 \maketitle
 
+\bigskip
+
 \tableofcontents
+
+\bigskip
 
 \task{W0}
 \subsection{$\RT_0$: Role-based Trust management with attributes}
@@ -70,119 +84,111 @@ The language utilized here is based on a combination of $\RT_0$ and $\RT_2$, and
     \item \textbf{Indirection}: Because we can specify policies according to attributes, we may assign i) a set of permissions (i.e. a role or multiple roles), to ii) a set of users, over iii) a set of objects, as long as those sets can be well-defined or uniquely specified (i.e. all elements in the desired set must share an attribute that specifies exactly that set).
     \item \textbf{Delegation}: Different entities that assign roles (within their domain) may easily defer to the authority of another entity for checking role membership. That is to say, if organization $A$ defines role $r_1$, it is simple to write a policy that includes into $r_1$ all members of role $r_2$ from some other organization $B$ as well. This is also referred to as 'delegation of attribute authority', meaning that if $B$ says that some subject has attribute $r_2$, then $A$ says it has attribute $r_1$ (here speaking of roles as attributes of users). Details of how this is done are given in the next section.
     \item \textbf{Role Hierarchy}: Roles may inherit permissions from other roles given by the same entity. This is a variant of delegation, in a sense allowing an organization to delegate authority over some role attribute to that same organization under another role attribute. Thus, role management is simplified and duplication is reduced.
-    \item \textbf{Attribute Intersection}: Support of multiple attributes on any given element in the system also allows specification of policies by intersection of attributes. For instance, it is possible to specify an action that is allowed only for users who are in the intersection of multiple roles (i.e. users that have each of those roles).
     \item \textbf{Logical Objects}: Inspired by $\RT_2$, the current variation of this framework also supports collections of objects, known as Object Groups, which allows addition by attribute and assignment of permissions respecting objects \textit{en masse}. In other words, it is possible to define a role with an access mode and an entire group of logically-related objects (via attributes) rather than just one object at a time.
+    \item \textbf{Attribute Intersection}: Support of multiple attributes on any given element in the system also allows specification of policies by intersection of attributes. For instance, it is possible to specify an action that is allowed only for users who are in the intersection of multiple roles (i.e. users that have each of those roles).
   \end{enumerate}
 \end{itemize}
 It is important to note that there are many other extensions and variations in the $\RT$ language family, and the current iteration was chosen as a convenient balance between expressiveness and feasibility for the purposes of the current project. Many other features are possible within the $\RT$ framework, such as parameterization of attributes, threshold policies, and more. \par
 Further, it is important to note that the original specification of $\RT$ also included details regarding the issue of \textit{common vocabularies} across entities. This issue of vocabularies or namespaces is dealt with via \textit{application domain specification documents (ADSDs)}, but was ommitted here for brevity's sake, and because it is not relevant to the ideas being explored. For more information however, and generally for a great amount of detail regarding the $\RT$ family of languages, see \cite{RTmain} and \cite{RTold}.
 
 
-\section{Task W1}
+\task{W1}
 \subsection{Overview of Syntax and Policy File Format}
 The syntax chosen to write policy files for the above language is straightforward and designed for maximal ease and clarity. It is encoded in XML, and comprises two primary sections in every entity for which policies are being defined: 1) Data, and 2) Policies. \par
-\textbf{Data} is where all elements of the system are specified, and includes the following: \\
-\begin{itemize}
-  \item A full definition of any objects in the system, including object groups and any attributes associated with them.
+\textbf{Data} is where all elements of the entity are specified, and includes the following:
+\begin{itemize}\tightlist
+  \item A full definition of any objects in the entity, including object groups and any attributes associated with them.
   \item A definition of all roles and their corresponding permissions, including all objects/object groups those roles affect and any role hierarchy that exists natively (independent of any particular policy).
-  \item Specification of all subjects or users given credentials (i.e. assigned roles) in the system, with all relevant attributes included.
+  \item Specification of all subjects or users given credentials (i.e. assigned roles) in the entity, with all relevant attributes included.
 \end{itemize}
-\textbf{Policies} is the section where any of the extra features or relationships are defined. Although some of the basic access policies are implicitly encoded in the Data section, more advanced relationships are expressed here, including: \\
-\begin{itemize}
-  \item Delegation of attribute or other authority.
+\textbf{Policies} is the section where any of the extra features or relationships are defined. Although some of the basic access policies are implicitly encoded in the Data section, more advanced relationships are expressed here, including:
+\begin{itemize}\tightlist
+  \item Delegation of authority.
+  \item Assignment of permissions using logical objects (i.e. objects grouped by attribute).
   \item Access that relies on attribute intersection.
   \item Any attribute inference or other complex relationships.
 \end{itemize}
 
 Thus an overall outline of the policy file may look like this: \\
 \begin{lstlisting}
+<?xml version="1.0"?>
+<!-- The <root> element simply contains everything and exists for parsing convenience -->
+<root>
+    <entity name="Entity 1">
+        <data>
+            <objects>
+              ...       <!-- All object groups and resources go here -->
+            </objects>
+            <roles>
+              ...       <!-- All role groups and permissions go here -->
+            </roles>
+            <subects>
+              ...       <!-- All subjects and their attributes go here -->
+            </subjects>
+        </data>
+        <policies>
+          ...           <!-- All specific policies go here -->
+        </policies>
+    </entity>
 
+    <entity name="Entity 2">
+      ...               <!-- Repeat for as many entities as you're defining -->
+    </entity>
+</root>
 \end{lstlisting}
-For example, an application may check if a username exists or a given password is correct by comparing its string value to the stored password for a user, whether in plaintext (unlikely for passwords) or by comparing their hash values. This typically occurs via a custom comparison for the object in question (potentially still timing sensitive!) or by using simple string comparison (both have been done historically). \cite{codahale} For example, the Java \inlinecode{MessageDigest.isEqual} method uses a simple byte comparison to check whether two digests are equal, which is essentially the implementation of string comparison for some languages.
 
-\section{Task W3}
+In keeping with generally accepted XML style, all core and necessary features of an element are contained in sub-elements, while optional or incidental data, including tags (or attributes) are contained as XML attributes in the opening tag. \par
+
+It is important to note that the description here is for a basic outline of a policy file, including implementation of features 1-5 above. Further extensions and options are possible and may be made available at a later time, but this describes the minimum syntax necessary to write an access control policy file with these features in \RT using an XML encoding.
+
+\subsubsection{Entities}
+The only thing to know about the \inlinecode{<entity>} element is that it has a single attribute called 'name' by which you may indicate the name of the entity. \par
+
+Otherwise, each section necessary for an entity's fully-described policy is explained forthwith.
+
+\subsection{Data}
+The \inlinecode{<data>} tag has no attributes, so we will move directly into considering objects, roles, and subjects.
+\subsubsection{Objects}
+This section is straightforward, and the easiest to define.
+The \inlinecode{<objects>} tag itself takes no attributes, but rather serves to enclose the section. Two types of elements can be contained in this section:
+\begin{enumerate}\tightlist
+  \item Object groups, denoted by the \inlinecode{<objectGroup>} tag, must have a name and otherwise may take any attributes desired.
+  \item Individual objects, denoted by the \inlinecode{<object>} tag, must have a name and otherwise may take any attributes desired. They may also have a group specified as a sub-element \inlinecode{<group>}.
+\end{enumerate}
+
+Our first feature is introduced in this section, namely feature 4: \textit{Logical Objects}. This refers to the ability to specify objects in one of 3 ways: 1) individually by name, 2) as a collection via a formalized Object Group such as 'Files' or 'Printers', or 3) as a collection by any identifying attribute that specifies the desired objects uniquely.
+Here I give an example of method (1)--specifying objects individually--and show how method (2) is represented, but give full details of Logical Objects (including (2) and (3)) later on in section \textbf{W5}.
+
+
+
+
+\subsubsection{Roles}
+Filler.
+
+\subsubsection{Subjects}
+Filler.
+
+
+\subsection{Policies}
+Filler.
+\subsubsection{Inference}
+Filler.
+\subsubsection{Delegation}
+Filler.
+\subsubsection{Logical Objects}
+Filler.
+
+
+
+\task{W3}
 Explain with 2 examples how to implement \textit{indirection}.
 
-\section{Task W4}
-\subsection{Algorithm A: Break-on-Inequality}
-Firstly, let's examine \textbf{Algorithm A} so that we can understand how and why this naive algorithm varies in runtime (including for inputs of the same size).
-In the pseudocode below, first notice that if the strings are different lengths, a 'False' is returned immediately (lines 5-6).
-This clearly changes the runtime in the case of different-sized inputs, which can reveal private information as discussed below.
-More subtle is the character-by-character comparison, which breaks as soon as it finds a mismatch between the two strings (line 11). This reveals information about \textit{how} close the two strings are (or in the case of an attacker, how correct the guess was).
-
-\begin{lstlisting}
-// This method takes two strings, a and b, and returns True if they are equal, False otherwise
-def algorithm_A (String a, String b)
-
-  // First check that the lengths are the same
-  if a.length != b.length
-    return False
-
-  // Now iterate through characters, comparing one by one
-  int i = 0
-  while i < a.length
-    if a[i] != b[i]
-      return False
-    i = i+1
-
-  // If we make it all the way, they match!
-  return True
-\end{lstlisting}
+\task{W4}
+Explain with 2 examples how to implement \textit{delegation}.
 
 
-\subsection{Results}
-Benchmarking \cite{benchmark} the above code -- implemented in the Ruby programming language -- over 1000s of iterations gives the results displayed in the table below. Note that the "different strings of the same length" differed in the first or nearly first characters while the "close strings of the same length" differed only on the final character, for both the sentence and the hash value. The following observations (about real time taken to compare inputs) are plain from the data:
-\begin{itemize}\tightlist
-  \item Comparing different strings of the same length is an order of magnitude slower than strings of different length.
-  \item Comparing nearly-identical strings is \textit{another} order of magnitude slower.
-  \item The difference between two close strings vs. two of the same string is very small, although it becomes more noticeable with a longer input.
-\end{itemize}
-
-\image{naive_results.png}
-
-This may also be clearer from the following graph of the clock time taken by each comparison type. Notice that the difference between two different strings of the same length and two close strings is more dramatic as the length increases.
-
-\image{naive_graph.png}
-
-
-\subsection{Effect on Privacy}
-It is clear that this measurable difference in string comparison times can be leveraged in a timing attack against some systems that make use of such an algorithm.
-Although my first speculation was that such an attack could be used to recover a password from a system that allows multiple login attempts, I quickly recalled my computer science class on 'Privacy in the Electronic Society', wherein we learned that it is insecure and foolish to 1) transmit passwords in cleartext, or 2) store cleartext passwords on a secure system.
-So the best that a timing attack could reveal in this instance (using techniques described below) is the hash of a password, or something that is normally sent in cleartext anyways.
-But of course due to the cryptographic properties of any good hash function, recovering the password itself from such information is all but impossible. \cite{hash}
-After further research and armchair rationalization, I determined that there are at least \textbf{two categories} of information that can be gained as a consequence of the above algorithm. The general setup for an attacker requires that:
-\begin{enumerate}\tightlist
-  \item The system being attacked makes use of Algorithm A, above.
-  \item The attacker be able to choose the input to the algorithm (making this a \textit{chosen plaintext} attack).
-  \item The attacker has some way of \textbf{verifying} whether or not the input was accepted; for example, a login form for a web app must indicate to the user (attacker) whether or not the input was correct, rather than simply sitting without any response.
-\end{enumerate}
-
-If the above conditions hold, then the system is functioning (loosely) as what is known as a \textit{verification oracle}, meaning that it will verify as correct or incorrect whatever input you provide, specifically by way of the (vulnerable) algorithm given above. This can leak information by way of a simple attack outlined here:
-
-\begin{enumerate}\tightlist
-  \item For any given set $x$ of known input characters and $y = {y_j \dots y_n}$ unknown, try every possibility for a variable $a$ in the input $x || a || y_{j+1} \dots y_n$ and some fixed filler, say \inlinecode{<underscore>}, for all $y_i \neq y_j$.
-  \item Sample some dozens of times (or more if necessary, over a network, etc.) on each combination, and then take the mean (or median to mitigate outliers) of the time taken to return an error/False message.
-  \item Set $a$ to be the character/byte with the greatest mean/median value (i.e. that takes the longest), add it to $x$, and then return to step 1 with $y = {y_{j+1} \dots y_n}$ and $a = y_{j+1}$.
-\end{enumerate}
-By repeating this process, first to find the correct length and then to find the correct combination of characters, it is possible to discern one or both of the following two types of (private) information.
-This may require a more sophisticated timing software than Ruby's built-in benchmarking module (which I used), but I believe that it would not be difficult to achieve such an attack, even with a basic timing program.
-
-\subsubsection{Existential information}
-
-Some variant of this attack is applicable in many circumstances. Some examples include checking "forgot my password" email tokens, testing answers to "security questions", or login forms as above. \cite{thisdata} Note that an attack similar to this could be perpetrated on older Unix systems, whose \inlinecode{login} program had a timing variation (execution of the \inlinecode{crypt} function) that depended on the string being recognized as a username. Combined with a dictionary attack on passwords, this could compromise the security of a system. \cite{wikitime} \\
-  \\
-This attack seems somewhat trivial, and perhaps only damaging in special circumstances. An extension of it that utilizes the full power of the attack outline first described would allow discovery of values that are associated with user information but typically hidden from users or inaccessible to outside attackers. It is this variant that we turn to next.
-
-\subsubsection{Secret values}
-This type of information is revealed when an attacker follows the iterative attack outline given previously. The examples I discuss all refer to hash values being uncovered, but there may be other applications I haven't considered or listed here. \\
-  \\
-  Suppose that there is a system, perhaps another web-based service, that authenticates users according to some keyed hash--a MAC or HMAC value for instance. This could be to authenticate a session cookie in a web browser \cite{codahale}, or to verify the author of some firmware for a system upgrade, or any other scenario wherein the hash of a password is used to confirm an identity. Also suppose that the three prerequisites defined at the beginning of this section all hold in relation to this hash value. That is:
-
-
-
-\section{Task W5}
+\task{W5}
 Explain with examples how to implement \textit{2 other features}.
-
 
 
 \pagebreak

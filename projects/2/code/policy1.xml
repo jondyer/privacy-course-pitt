@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!-- The <root> element simply contains everything and exists for parsing convenience -->
+<root>
+    <entity name="Entity 1">
+        <data>
+            <objects>
+              ...       <!-- All object groups and resources go here -->
+            </objects>
+            <roles>
+              ...       <!-- All role groups and permissions go here -->
+            </roles>
+            <subects>
+              ...       <!-- All subjects and their attributes go here -->
+            </subjects>
+        </data>
+        <policies>
+          ...           <!-- All specific policies go here -->
+        </policies>
+    </entity>
+
+    <entity name="Entity 2">
+      ...               <!-- Repeat for as many entities as you're defining -->
+    </entity>
+</root>
+
+>>> for child in root.iter():
+...     if child.get('description'):
+...             print('Tag: {0:13} Description: {1}'.format(child.tag, child.get('description')))

@@ -11,9 +11,11 @@
 \usepackage[backend=bibtex,type=alphabetical,sorting=ynt]{biblatex}
 \addbibresource{p2.bib}
 
+\usepackage{sectsty}
+\subsubsectionfont{\normalfont\itshape}
+
 % ============ USED FOR MY FORMAT ============
 \providecommand{\task}[1]{\section{Task #1}}
-\providecommand{\soln}{\textbf{Solution: }}
 \providecommand{\image}[1]{
     \begin{center}
         \includegraphics[width=1.0\textwidth]
@@ -60,11 +62,9 @@
 \begin{document}
 \maketitle
 
-\bigskip
-
 \tableofcontents
 
-\bigskip
+\pagebreak
 
 \task{W0}
 \subsection{$\RT_0$: Role-based Trust management with attributes}
@@ -72,20 +72,21 @@ The access-control language selected for this project is a simplified variant of
 In spite of the name, the $\RT$ family is actually an extension of role-based access control (RBAC) known as \textit{attribute}-based access control (ABAC).
 It fulfills all of the desirable traits mentioned in \cite{RTmain}, including delegation of attribute authority, inference of attributes, and more.
 By allowing explicit subject abstraction and specific attribute assignment to those subjects, the system provides the same functionality that roles do via selection by attributes and intersection of attributes along with even greater flexibility and expressiveness.
-The language utilized here is based on a combination of $\RT_0$ and $\RT_2$, and functions as follows: \\
+The language utilized here is based on a combination of $\RT_0$ and $\RT_2$, and functions as follows:
 \begin{itemize}
   \item The primary structures in this framework are \textit{entities} (or principals), \textit{subjects} (or users), \textit{roles} (which contain rights or permissions), and \textit{objects} (or resources).
   \item \textbf{Entities} are simply the organizations or systems that issue credentials (i.e. assign roles to users). By explicitly abstracting entities, the $\RT$ framework allows for localized roles, as well as more extensive delegation.
   \item \textbf{Subjects} are the users or agents in the system. They may have one or more roles that provide them with permissions (or authorized actions) for accessing objects in the specified way.
-  \item \textbf{Roles} are a convenient way of grouping permissions that may be assigned to subjects. Roles may be hierarchical--if a role dominates another, then it has every permission the other role has. This helps reduce the number of roles and relationships that have to be dealt with in the system. Role assignment may be achieved by specifying subject attributes.
+  \item \textbf{Roles} are a convenient way of grouping permissions that may be assigned to subjects. Roles may be hierarchical--if one role dominates another, then it has every permission the other role has. This helps reduce the number of roles and relationships that have to be dealt with in the system. Role assignment may be achieved by specifying subject attributes.
   \item \textbf{Objects} are the elements whose access is being controlled by this entire schema. They may be grouped by attribute as well, allowing flexible and powerful specification of permissions.
-  \item Each structure accepts descriptive \textit{attributes} that enable powerful specification of policies based on any desired combination of subject, role, or object attributes. This, in conjunction with the outline above, facilitates the following features (among others): \\
+  \item Each structure accepts descriptive \textit{attributes} that enable powerful specification of policies based on any desired combination of subject, role, or object attributes. This, in conjunction with the outline above, facilitates the following features (among others):
   \begin{enumerate}
     \item \textbf{Indirection}: Because we can specify policies according to attributes, we may assign i) a set of permissions (i.e. a role or multiple roles), to ii) a set of users, over iii) a set of objects, as long as those sets can be well-defined or uniquely specified (i.e. all elements in the desired set must share an attribute that specifies exactly that set).
     \item \textbf{Delegation}: Different entities that assign roles (within their domain) may easily defer to the authority of another entity for checking role membership. That is to say, if organization $A$ defines role $r_1$, it is simple to write a policy that includes into $r_1$ all members of role $r_2$ from some other organization $B$ as well. This is also referred to as 'delegation of attribute authority', meaning that if $B$ says that some subject has attribute $r_2$, then $A$ says it has attribute $r_1$ (here speaking of roles as attributes of users). Details of how this is done are given in the next section.
     \item \textbf{Role Hierarchy}: Roles may inherit permissions from other roles given by the same entity. This is a variant of delegation, in a sense allowing an organization to delegate authority over some role attribute to that same organization under another role attribute. Thus, role management is simplified and duplication is reduced.
     \item \textbf{Logical Objects}: Inspired by $\RT_2$, the current variation of this framework also supports collections of objects, known as Object Groups, which allows addition by attribute and assignment of permissions respecting objects \textit{en masse}. In other words, it is possible to define a role with an access mode and an entire group of logically-related objects (via attributes) rather than just one object at a time.
-    \item \textbf{Attribute Intersection}: Support of multiple attributes on any given element in the system also allows specification of policies by intersection of attributes. For instance, it is possible to specify an action that is allowed only for users who are in the intersection of multiple roles (i.e. users that have each of those roles).
+    \item \textbf{Attribute Inference}: The $\RT$ framework is flexible enough to allow specification of inference rules. This essentially provides a conditional ('if-then') logic that allows you to assert some property of a subject, object, or role as long as it has some other property.
+    \item \textbf{Attribute Intersection}: Support of multiple attributes on any given element in the system also allows specification of policies by intersection of attributes. For instance, it is possible to specify an action that is allowed only for users who are in the intersection of multiple roles (i.e. users that have each of those roles). This feature is \textbf{not implemented} in the current project.
   \end{enumerate}
 \end{itemize}
 It is important to note that there are many other extensions and variations in the $\RT$ language family, and the current iteration was chosen as a convenient balance between expressiveness and feasibility for the purposes of the current project. Many other features are possible within the $\RT$ framework, such as parameterization of attributes, threshold policies, and more. \par
@@ -94,22 +95,22 @@ Further, it is important to note that the original specification of $\RT$ also i
 
 \task{W1}
 \subsection{Overview of Syntax and Policy File Format}
-The syntax chosen to write policy files for the above language is straightforward and designed for maximal ease and clarity. It is encoded in XML, and comprises two primary sections in every entity for which policies are being defined: 1) Data, and 2) Policies. \par
-\textbf{Data} is where all elements of the entity are specified, and includes the following:
+The syntax chosen to write policy files for the above language is straightforward and designed for maximal ease and clarity. It is encoded in XML, and comprises two primary sections in every entity for which policies are being defined: 1) Data, and 2) Policies.
+\paragraph{Data} is where all elements of the entity are specified, and includes the following:
 \begin{itemize}\tightlist
-  \item A full definition of any objects in the entity, including object groups and any attributes associated with them.
-  \item A definition of all roles and their corresponding permissions, including all objects/object groups those roles affect and any role hierarchy that exists natively (independent of any particular policy).
-  \item Specification of all subjects or users given credentials (i.e. assigned roles) in the entity, with all relevant attributes included.
+  \item A full definition of any objects in the entity, including Logical Objects (object groups) and any attributes associated with them.
+  \item A definition of all roles and their corresponding permissions, including all objects/object groups those roles affect. Any role hierarchy will be defined in the policy section.
+  \item Specification of all subjects or users given credentials (i.e. assigned roles) in the entity.
 \end{itemize}
-\textbf{Policies} is the section where any of the extra features or relationships are defined. Although some of the basic access policies are implicitly encoded in the Data section, more advanced relationships are expressed here, including:
+\paragraph{Policies} is the section where any of the extra features or relationships are defined. Although many of the basic access policies are implicitly encoded in the Data section, more advanced relationships are expressed here, including:
 \begin{itemize}\tightlist
   \item Delegation of authority.
-  \item Assignment of permissions using logical objects (i.e. objects grouped by attribute).
-  \item Access that relies on attribute intersection.
-  \item Any attribute inference or other complex relationships.
+  \item Role hierarchy definition.
+  \item Access that relies on attribute intersection (not discussed in this document).
+  \item Attribute inference or other complex relationships.
 \end{itemize}
 
-Thus an overall outline of the policy file may look like this: \\
+Thus an overall outline of the policy file may look like this:
 \begin{lstlisting}
 <?xml version="1.0"?>
 <!-- The <root> element simply contains everything and exists for parsing convenience -->
@@ -120,7 +121,7 @@ Thus an overall outline of the policy file may look like this: \\
               ...       <!-- All object groups and resources go here -->
             </objects>
             <roles>
-              ...       <!-- All role groups and permissions go here -->
+              ...       <!-- All roles and permissions go here -->
             </roles>
             <subects>
               ...       <!-- All subjects and their attributes go here -->
@@ -130,54 +131,180 @@ Thus an overall outline of the policy file may look like this: \\
           ...           <!-- All specific policies go here -->
         </policies>
     </entity>
-
     <entity name="Entity 2">
       ...               <!-- Repeat for as many entities as you're defining -->
     </entity>
 </root>
 \end{lstlisting}
 
-In keeping with generally accepted XML style, all core and necessary features of an element are contained in sub-elements, while optional or incidental data, including tags (or attributes) are contained as XML attributes in the opening tag. \par
+In keeping with generally accepted XML style, all core and necessary features of an element are contained in sub-elements, while optional or incidental data, including labels (i.e. attributes) are contained as XML attributes in the opening tag. \par
 
-It is important to note that the description here is for a basic outline of a policy file, including implementation of features 1-5 above. Further extensions and options are possible and may be made available at a later time, but this describes the minimum syntax necessary to write an access control policy file with these features in \RT using an XML encoding.
+It is important to keep in mind that the description here is for a basic outline of a policy file, including implementation of features 1-5 above. Further extensions and options are possible and may be made available at a later time, but this describes the minimum syntax necessary to write an access control policy file with these features in $\RT$ using an XML encoding.
+
+\paragraph{Note:} Throughout this document the term "administrator" will be used to refer to the writer of the policy file.
+
 
 \subsubsection{Entities}
-The only thing to know about the \inlinecode{<entity>} element is that it has a single attribute called 'name' by which you may indicate the name of the entity. \par
-
-Otherwise, each section necessary for an entity's fully-described policy is explained forthwith.
+The only thing to know about the \inlinecode{<entity>} element is that it has a single attribute called 'name' by which you may indicate the name of the entity. In order to utilize delegation, relevant entities \textit{must} be named. Note that this implementation does not currently support hierarchical entities. Otherwise, each section (Data + Policies) necessary for an entity's fully-described access control is explained forthwith.
 
 \subsection{Data}
 The \inlinecode{<data>} tag has no attributes, so we will move directly into considering objects, roles, and subjects.
+
 \subsubsection{Objects}
-This section is straightforward, and the easiest to define.
+This section is straightworward to write: simply define any objects in your system, and assign them to groups if desired.
 The \inlinecode{<objects>} tag itself takes no attributes, but rather serves to enclose the section. Two types of elements can be contained in this section:
 \begin{enumerate}\tightlist
-  \item Object groups, denoted by the \inlinecode{<objectGroup>} tag, must have a name and otherwise may take any attributes desired.
-  \item Individual objects, denoted by the \inlinecode{<object>} tag, must have a name and otherwise may take any attributes desired. They may also have a group specified as a sub-element \inlinecode{<group>}.
+  \item Object Groups are denoted by the \inlinecode{<objectGroup>} tag and must have a name, and otherwise have no requirements.
+  \item Individual objects, denoted by the \inlinecode{<object>} tag, must have a name and otherwise have no requirements. They may also be assigned to one or more groups, specified as sub-elements with \inlinecode{<group>}.
 \end{enumerate}
 
-Our first feature is introduced in this section, namely feature 4: \textit{Logical Objects}. This refers to the ability to specify objects in one of 3 ways: 1) individually by name, 2) as a collection via a formalized Object Group such as 'Files' or 'Printers', or 3) as a collection by any identifying attribute that specifies the desired objects uniquely.
-Here I give an example of method (1)--specifying objects individually--and show how method (2) is represented, but give full details of Logical Objects (including (2) and (3)) later on in section \textbf{W5}.
+Our first feature is introduced in this section, namely \textit{Logical Objects} (called 'Object Groups' from now on).
+This refers to the ability to specify objects in one of two ways: individually by name, or as a collection via a formalized Object Group such as 'Files' or 'Printers'.
+Here I give an example of how to represent both in the XML encoding schema.
+Usage of (1) and (2) in access policies is covered in \textit{Roles}.
+Detailed examples of Logical Objects will be provided later on in section \textbf{W5}.
 
-
-
+The snippet of code below shows one Object Group called 'Files' and three objects, two of which are assigned the Files group and one of which is not assigned any group.
+\begin{lstlisting}
+...
+<objects>
+    <objectGroup description="This group is for regular old files">
+        <name>Files</name>
+    </objectGroup>
+    <object description="This object is in the group 'Files'">
+        <name>users_file.txt</name>
+        <group>Files</group>
+    </object>
+    <object description="This object is also in the group 'Files'">
+        <group>Files</group>
+        <name>passwords_file.txt</name>
+    </object>
+    <object description="This object has no group">
+        <name>LabPrinter</name>
+    </object>
+</objects>
+...
+\end{lstlisting}
+\begin{itemize}\tightlist
+  \item Note that each object or Object Group may have one or more attributes given in the opening tag (such as 'description'). These are optional and defined by the administrator, and are not used in the current implementation of $\RT$ but may be supported in some forthcoming feature (such as printing descriptions of structures in the policy file). They do not affect functionality and may be safely ignored.
+  \item Significantly, we may assign an object to as many groups as we wish. In future releases, this would make possible the specification of objects by union/intersection of Object Groups, in what is known as 'Attribute Intersection'.
+  \item Finally notice that order of sub-elements does not matter -- \inlinecode{group} may come before or after \inlinecode{name}.
+\end{itemize}
 
 \subsubsection{Roles}
-Filler.
+The roles section is only slightly more complex, since all advanced role manipulation takes place in the Policies section. Of special note below, we \textit{must} designate a name for every role, else it will not be useful. The \inlinecode{<objects>} tag itself requires no attributes. \par
+Also, because the \textit{types} of access or permission tend to be far fewer than the number of objects being accessed, we will always define permissions according to type, followed by a list of objects that permission applies to, rather than entering every object and associated permissions individually. This saves a great deal of effort on the part of the administrator. \par
+Our next feature, \textit{Indirection}, is best noted here, since it has primarily to do with assigning sets of permissions. These sets are abstracted as roles, and make it easy to lump permissions that are commonly assigned together.
+
+\begin{lstlisting}
+...
+<roles>
+    <role description="Everyone gets put into this role">
+        <name>User</name>
+        <permission description="Read rights for all Users">
+            <type>Read</type>
+            <target type="object">users_file.txt</target>
+        </permission>
+        <permission>
+            <type>Write</type>
+            <target type="object">users_file.txt</target>
+        </permission>
+    </role>             <!-- End role 'Member' -->
+    <role description="This is only for superusers">
+        <name>Admin</name>
+        <permission description="Read all Files and objects for Admins">
+            <type>Read</type>
+            <target type="objectGroup">Files</target>   <!-- I can assign a group at once -->
+            <target type="object">LabPrinter</target>   <!-- or just a single object -->
+        </permission>
+        <permission description="Write to all Files and objects for Admins">
+            <type>Write</type>
+            <target type="objectGroup">Files</target>
+            <target type="object">LabPrinter</target>
+        </permission>
+    </role>             <!-- End role 'Admin' -->
+</roles>
+...
+\end{lstlisting}
+\begin{itemize}\tightlist
+  \item All permissions must be described within the context of some role, and roles can have as many permissions as desired.
+  \item The tag \inlinecode{<target>} defines what resource(s) the permission is referring to, and a given right may be assigned for an indefinite number of targets.
+  \item The '\inlinecode{type=}' attribute is mandatory metadata that specifies the type of target being accessed; currently only objects and Object Groups are supported.
+\end{itemize}
+
 
 \subsubsection{Subjects}
-Filler.
+The subjects section is the final sub-section of \textbf{Data}, and contains information about all users or actors in the system. Here they are assigned roles which give them the permissions associated with those roles.
+This also supports \textit{Indirection}, by allowing users to be associated with a large set of permissions at once (in the form of a role), perhaps even pertaining to a large set of objects at once (in the form of Object Groups)! \par
+Of note below is that every subject \textit{must} have a name, but not every subject must have a role (although users without a role will have no permissions, it is possible that such a circumstance is necessary). Otherwise this section is written in a natural and simple way. \par
+The \inlinecode{<subjects>} tag itself requires no attributes, but simply encloses the section. \par
 
+This section of code shows the user 'Alice' being defined and assigned the role 'Admin'.
+\begin{lstlisting}
+...
+<subjects>
+    <subject>
+        <name>Alice</name>
+        <role>Admin</role>
+    </subject>
+</subjects>
+...
+\end{lstlisting}
 
 \subsection{Policies}
-Filler.
-\subsubsection{Inference}
-Filler.
-\subsubsection{Delegation}
-Filler.
-\subsubsection{Logical Objects}
-Filler.
+Now for the section on writing more advanced rules. Most policies can be written into the \textbf{Data} section above.
+Each feature that has not already been covered -- \textit{Delegation, Role Hierarchy,} and \textit{Attribute Inference} -- is briefly presented here, and all features will receive in-depth treatment in sections \textbf{W3} through \textbf{W5}. \par
+The \inlinecode{<policies>} tag requires no attributes, and there can be as few or as many sub-elements as desired.
 
+\subsubsection{Hierarchy}
+This is the simplest policy to define, and takes the form of an 'if-then' statement. All role hierarchies can be described this way: "\textit{If} some user has the role $r_1$, \textit{then} that user also has the role $r_2$". This is another way of saying that "Role $r_1$ \textit{dominates} role $r_2$". The format is simple:
+\begin{lstlisting}
+...
+<policies>
+    ...
+    <hierarchy>
+        <if>Role_1</if>
+        <then>Role_2</then>
+    </hierarchy>
+    ...
+</policies>
+\end{lstlisting}
+This will become useful for specifying specialized roles without repeating a lot of work. See \textbf{W5} for more details.
+
+\subsubsection{Delegation}
+Delegation is straightforward as well, although it requires more thought in order to write a useful policy. In $\RT$, because all access rights are assigned via roles, delegation takes the form of "Give some subject a role in one entity as long as it has some role in this other entity".
+Again policy may take the form of a conditional: "\textit{If} some user has the role $r_1$ in entity $e_1$, \textit{then} that user also has the role $r_2$ in entity $e_2$".
+Note that if the roles $r_1$ and $r_2$ are the same role $r$, then this becomes a delegation from $e_2$ to $e_1$ of authority over $r$. Conversely if the entities are the same entity $e$, then this becomes a case of role hierarchy.
+
+\begin{lstlisting}
+...
+<policies>
+    ...
+    <delegation>
+        <if>Role_1</if>         <!-- if this role   -->
+        <from>Entity_1</from>   <!-- in this entity -->
+        <then>Role_2</then>     <!-- then this role -->
+        <to>Entity_2</to>       <!-- in this entity -->
+    </delegation>
+    ...
+</policies>
+\end{lstlisting}
+The order of the elements is not important, but the presentation above may provide the best readability. Note that the \inlinecode{<to>} value must be the entity within which the policy is defined. See \textbf{W4} for more details.
+
+\subsubsection{Inference}
+Finally the attribute inference policy. As the only structures that currently support attributes are objects (in the form of Object Groups), this policy will have a fairly straightforward syntax as well, also in the form of a conditional: "\textit{If} some object is in group $g_1$, \textit{then} that object is also in the group $g_2$". See the following snippet for the structure.
+\begin{lstlisting}
+...
+<policies>
+    ...
+    <inference>
+        <if>Group_1</if>
+        <then>Group_2</then>
+    </inference>
+    ...
+</policies>
+\end{lstlisting}
+Essentially what we have described here is a type of Object Group Hierarchy, which allows inference of membership in one group to membership in another, thus the syntax is identical to the role hierarchy policies. More detailed examples are found in section \textbf{W5}.
 
 
 \task{W3}
@@ -191,53 +318,8 @@ Explain with 2 examples how to implement \textit{delegation}.
 Explain with examples how to implement \textit{2 other features}.
 
 
-\pagebreak
-
 \section{Task W7}
-\subsection{Algorithm B: Constant-Time Comparison}
-Now let's examine \textbf{Algorithm B} so that we can understand how and why this revised algorithm runs in a more constant-time manner, mitigating some of the effects discussed for Algorithm A above.
-In the pseudocode below, first notice that before anything else we select a consistent number of iterations to run the byte-wise comparisons for (\inlinecode{len} in the code below, line 5)--this helps ensure that we don't reveal information about the length of the secret value (perhaps a login name), since that was an obvious and large timing difference in our naive algorithm.
-Next, consider the revised loop through our inputs (lines 9-13). Rather than breaking this loop once we find a mismatch, we continue for the specified length \inlinecode{len} (line 9).
-Then we check that both of the next characters are even valid to be compared (line 10). If so, we skip to the \inlinecode{else} (line 12) and proceed with the comparison. If either one is \textit{not} valid, we execute a "dummy" comparison to (hopefully) take the same amount of time as a real one (line 11).
-Finally, we return the resulting boolean.
-
-\begin{lstlisting}
-// This method takes two strings, a and b, and returns True if they are equal, False otherwise
-def algorithm_B (String a, String b)
-
-  // We'll assume string a is the "system string" we're comparing the user-input against
-  int len = a.length
-
-  // Now set a boolean and then iterate through characters, comparing each (even on mismatch)
-  boolean bool = (a.length == b.length)
-  for i in $0 \dots$ len                  // for every character in the fixed length
-    if a[i] == null || b[i] == null       // if we've reached the end of one string
-      bool = (a[0] == a[0]) && bool       // compare something anyways
-    else                                  // otherwise
-      bool = (a[i] == b[i]) && bool       // compare the two chars, update the boolean
-
-  return bool
-\end{lstlisting}
-
-
-\subsection{Results}
-Benchmarking the above code -- implemented in Ruby -- over 1000s of iterations gives the results displayed in the table below. Note that the timing distinctions between the different types of comparison are almost entirely eliminated for shorter strings, and are statistically insignificant for longer strings/hash values. It is worth noting that comparing strings of different length still seems to be notably faster, especially for shorter inputs. This could reveal the length of a secret, given enough samples.
-
-\image{constant_results.png}
-
-The improvement is especially clear given the graph below, which shows much more even timing results across different types of input. In particular, the test on longer (hash) strings shows a slight reversal in the trend across strings of the same length--which could indicate that it would lead an attacker to make incorrect guesses (a desirabe trait).
-
-\image{constant_graph.png}
-
-\subsection{Trade-Offs \& Design Decisions}
-There is a significant performance cost associated with making constant-time comparisons, especially when trying to obscure even the length of the secret value(s). Notice in the comparison graph below for Naive vs. Constant Comparison that the constant-time algorithm takes nearly twice as long when comparing similar strings and \textit{several times} as long when comparing very different strings. This would be a highly significant cost on a system or web-server that may receive thousands of requests a day/hour/minute. \par
-
-\begin{center}
-    \includegraphics[width=0.8\textwidth]
-        {alg_perf.png}
-\end{center}
-
-
+Filler.
 
 \pagebreak
 

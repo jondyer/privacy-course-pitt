@@ -125,6 +125,9 @@ class Entity:
         self.role_rights = {}           # maps (role name, access type) => set {names of objects affected}
         self.subjects = {}              # maps name of subject => <subject> node
         self.subj_roles = {}            # maps subject name => set {names of roles}
+        self.delegated1 = False         # flag to indicate whether importing roles has taken place
+        self.delegated2 = False         # flag to indicate whether importing roles has taken place
+
 
         self.name = root.get('name')    # set the name of the entity
         data = root.find('data')
@@ -223,6 +226,11 @@ class Entity:
         self.deleg = policies.findall('delegation')
 
     def delegate(self):
+        if self.delegated1:
+            self.delegated2 = True
+        elif self.delegated2:
+            return
+
         for duh in self.deleg:
             i = duh.find('if').text                 # extract the 'if' role
             t = duh.find('then').text               # extract the 'then' role
@@ -232,12 +240,16 @@ class Entity:
             if to != self.name:                     # skip if 'to' not this entity
                 continue
 
+            if not all_ents[fr].delegated1:
+                all_ents[fr].delegate()
+
             for s in self.subjects:                     # for each subject here
                 if s in all_ents[fr].subjects:       # if subject exists in 'from' entity    ???
                     if i in all_ents[fr].subj_roles[s]:         # if 'if' role goes with subject there
                         self.subj_roles[s].add(t)               # then add 'then' role here ('to')
 
 
+        self.delegated1 = True
     ############################## END PARSING AND INITIALIZATION ##################################
 
 

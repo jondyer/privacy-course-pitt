@@ -306,9 +306,21 @@ Finally the attribute inference policy. As the only structures that currently su
 \end{lstlisting}
 Essentially what we have described here is a type of Object Group Hierarchy, which allows inference of membership in one group to membership in another, thus the syntax is identical to the role hierarchy policies. More detailed examples are found in section \textbf{W5}.
 
+\task{C2}
+See the accompanying program \inlinecode{parser.py} for full details of the enforcement engine. It provides responses to standard access queries to answer the question "Can user $u$ access file $f$ with privilege $p$?" It also allows greater exploration of the consequences of the specified access policy file, all via a convenient interactive menu. This enables someone to discover which subjects have which roles in an entity, or what the permissions of each role are, among other information.
 
 \task{W3}
-Explain with 2 examples how to implement \textit{indirection}.
+\subsection{Indirection}
+Here we provide more detailed and thorough examples of the indirection feature.
+As previously mentioned, indirection refers to the ability to assign large sets of permissions at once.
+This is achieved primarily through the use of roles, although object groups can be of some help here as well.
+Roles are interpositioned between subjects and their rights regarding objects, and it is this positioning which enables the indirection.
+The use of roles is quite simple, as the following two samples shall illustrate. \\
+ \\
+Our first example is of the most basic usage. We define a few roles in terms of their permissions or privileges over several individual objects (assumed to be previously defined), and then assign those roles variously to subjects as we wish.
+\begin{lstlisting}
+asdflkja;slkfda;lsdkf;aslkdjf
+\end{lstlisting}
 
 \task{W4}
 Explain with 2 examples how to implement \textit{delegation}.

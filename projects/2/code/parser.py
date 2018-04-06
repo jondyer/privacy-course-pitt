@@ -27,11 +27,6 @@ def heading(str):
     print("** %s:" % (str,))
     print('-'*60)
 
-SHOW_CMD = True
-def print_cmd(cmd):
-    if SHOW_CMD:
-        print(cmd.decode('utf-8'))
-
 def print_rows(rows):
     for row in rows:
         print(row)
@@ -41,7 +36,6 @@ def print_rows(rows):
 #------------------------------------------------------------
 def show_menu():
     menu = '''
-
 --------------------------------------------------
 1. List objects
 2. List groups
@@ -49,7 +43,7 @@ def show_menu():
 3. List roles
 4. List subjects
 ---
-5. Make an access query ("Can subject U access file F with privilege P?")
+5. Make an access query
 
 
 Choose (1-7, 0 to quit): '''
@@ -63,13 +57,15 @@ Choose (1-7, 0 to quit): '''
         if choice == 0:
             print('Done.')
             exit(0)
-        elif choice in range(1,1+5):
+        elif choice in range(1,1+4):
             e = get_entity_menu()
             actions[choice](e)
             show_menu()
-        elif choice in range(6,1+7):
-            print()
-            actions[choice]()
+        elif choice == 5:
+            if actions[choice]():
+                print('\n\nAllow')
+            else:
+                print('\n\nDeny')
             show_menu()
         else:
             print("\n\n* Invalid choice (%s). Choose again." % choice)
@@ -83,7 +79,6 @@ Choose (1-7, 0 to quit): '''
 #------------------------------------------------------------
 def get_entity_menu():
     menu_1 = '''
-
 --------------------------------------------------
 Please select an entity:
 '''
@@ -227,7 +222,7 @@ class Entity:
         # Finally delegation -- stored for now, then dealt with in a method
         self.deleg = policies.findall('delegation')
 
-    def delegate():
+    def delegate(self):
         for duh in self.deleg:
             i = duh.find('if').text                 # extract the 'if' role
             t = duh.find('then').text               # extract the 'then' role
@@ -238,17 +233,9 @@ class Entity:
                 continue
 
             for s in self.subjects:                     # for each subject here
-                if s in all_ents[fr].subjects:              # if subject exists in 'from' entity    ???
+                if s in all_ents[fr].subjects:       # if subject exists in 'from' entity    ???
                     if i in all_ents[fr].subj_roles[s]:         # if 'if' role goes with subject there
                         self.subj_roles[s].add(t)               # then add 'then' role here ('to')
-
-            for rr in all_ents[fr].role_rights:         # also for each role-right combo in 'from' entity
-                r,ty = rr                               # extract (role, type) info
-                if t == r:                              # if the role is the 'then' role
-                    if r in self.roles:                     # and it exists
-                    tu = (i,ty)                             # then its rights belong to 'if'!
-                    self.role_rights[tu].update(self.role_rights[rr])
-
 
 
     ############################## END PARSING AND INITIALIZATION ##################################
@@ -311,98 +298,39 @@ def list_subjects_menu(entity):
     for name, sub_set in entity.l_subjects().items():
         print('\nSubject: {0}\nRoles:   {1}'.format(name, list(sub_set)))
 
-#-----------------------------------------------------------------
-# new_user
-#-----------------------------------------------------------------
-
-def new_user_menu():
-    heading("new_user")
-    fname = input('First name: ')
-    lname = input('Last name: ')
-    email = input('Email: ')
-    new_user(first_name=fname, last_name=lname, email=email)
-
-def new_user(first_name, last_name, email):
-    tmpl = '''
-        INSERT INTO Users (first_name,last_name,email)
-                   VALUES (%s,%s,%s);
-    '''
-    cmd = cur.mogrify(tmpl, (first_name,last_name,email))
-    print_cmd(cmd)
-    cur.execute(cmd)
-    list_users()
-
-
-
-#-----------------------------------------------------------------
-# add_friend
-#-----------------------------------------------------------------
-
-def add_friend_menu():
-    print("add_friend")
-    uid_1 = input("Uid_1: ")
-    uid_2 = input("Uid_2: ")
-    add_friend(uid_1, uid_2)
-
-def add_friend(uid_1,uid_2):
-    tmpl = '''
-        INSERT INTO Friends(uid_1,uid_2)
-                     VALUES(%s,%s);
-    '''
-    cmd = cur.mogrify(tmpl, (uid_1,uid_2))
-    print_cmd(cmd)
-    cur.execute(cmd)
-
-    tmpl = '''
-        INSERT INTO Friends(uid_1,uid_2)
-                     VALUES(%s,%s);
-    '''
-    cmd = cur.mogrify(tmpl, (uid_2,uid_1))
-    print_cmd(cmd)
-    cur.execute(cmd)
-
-#-----------------------------------------------------------------
-# show messages
-#-----------------------------------------------------------------
-
-def show_messages_menu():
-    heading("show_messages")
-    uid = input("User id: ")
-    show_messages(uid)
-
-def show_messages(uid):
-    tmpl = '''
-        SELECT *
-          FROM Messages as m
-         WHERE m.posted_to = %s or m.posted_by = %s;
-    '''
-    cmd = cur.mogrify(tmpl, ( uid, uid))
-    print_cmd(cmd)
-    cur.execute(cmd)
-    rows = cur.fetchall()
-    print_rows(rows)
-    print()
-    for row in rows:
-        id, p_to, p_by, message, date = row
-        print("%s. %s <-- %s | %s (%s)" % (id, p_to, p_by, message, date))
-
-
 
 #-----------------------------------------------------------------
 # access_query
 #-----------------------------------------------------------------
 
 def access_query():
-    None
+    heading('Access Query')
 
+    try:
+        print('Can user U access file F with privilege P?\nAll inputs are case-sensitive!\n')
+        user = raw_input( 'Please enter the subject (user) name: ' )
+        resource = raw_input( 'Please enter the object (file) name: ')
+        access = raw_input( 'Please enter the type of access (privilege): ')
+    except ValueError:
+        print("\n\n* Invalid choice. Choose again.")
+        return access_query()
+    else:
+        for e, e_obj in all_ents.items():                           # for any entity
+            if resource in e_obj.objects and user in e_obj.subjects:    # if both the object and subject exist there
+                for role in e_obj.roles:                                    # for all roles there
+                    if resource in e_obj.role_rights[(role,access)]:            # if the role has that permission for the object
+                        if role in e_obj.subj_roles[user]:                          # and the user has that role
+                            return True                                                 # then we're good to go
+        return False
+    finally:
+        None
 
 
 # We leverage the fact that in Python functions are first class
 # objects and build a dictionary of functions numerically indexed
 
 actions = { 1:list_objects_menu,    2:list_groups_menu,   3:list_roles_menu,
-            4:list_subjects_menu,  5:list_subjects_menu,
-            6:show_messages_menu, 7:access_query }
+            4:list_subjects_menu,  5:access_query }
 
 
 if __name__ == '__main__':
@@ -421,8 +349,8 @@ if __name__ == '__main__':
 
         # now because delegation requires that other entities be formed already, we
         # must wait until after the loop to update any permissions according to delegation
-        for e, e_obj in all_ents.items():
-
+        for e in all_ents.values():
+            e.delegate()
 
         show_menu()
 
@@ -432,3 +360,5 @@ if __name__ == '__main__':
 
         # perhaps support cmd-line args later
         # if len(sys.argv) >= 2:
+
+        # TODO: Provide option to print out policies (EASY)

@@ -196,6 +196,10 @@
           <name>Frank</name>
           <role>User</role>
         </subject>
+        <subject>
+          <name>Diana</name>
+          <role>Admin</role>
+        </subject>
       </subjects>
     </data>
     <policies>

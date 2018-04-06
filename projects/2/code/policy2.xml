@@ -1,37 +1,44 @@
 <?xml version="1.0"?>
-<!-- The <root> element simply contains everything and exists for parsing convenience -->
+<!-- This is to represent a small business, still with just one entity but with more employees
+        - There are quite a few objects, divided according to type, so groups are used
+        - A number of employees have rights to just one of the groups
+        - This file uses role hierarchy, logical objects, and attribute inference to help manage size
+        - The longest chain of trust is only 3 levels
+-->
 <root>
-  <entity name="School">
+  <entity name="Business">
     <data>
       <objects>
-        <objectGroup><name>Dwarfs</name></objectGroup>
+        <objectGroup><name>Users</name></objectGroup>
+        <objectGroup><name>Everything</name></objectGroup>
         <objectGroup><name>Days</name></objectGroup>
+        <objectGroup><name>Yoga</name></objectGroup>
         <object>
-          <group>Dwarfs</group>
+          <group>Users</group>
           <name>Grumpy</name>
         </object>
         <object>
-          <group>Dwarfs</group>
+          <group>Users</group>
           <name>Happy</name>
         </object>
         <object>
-          <group>Dwarfs</group>
+          <group>Users</group>
           <name>Sleepy</name>
         </object>
         <object>
-          <group>Dwarfs</group>
+          <group>Users</group>
           <name>Bashful</name>
         </object>
         <object>
-          <group>Dwarfs</group>
+          <group>Users</group>
           <name>Sneezy</name>
         </object>
         <object>
-          <group>Dwarfs</group>
+          <group>Users</group>
           <name>Dopey</name>
         </object>
         <object>
-          <group>Dwarfs</group>
+          <group>Users</group>
           <name>Doc</name>
         </object>
         <object>
@@ -40,6 +47,7 @@
         </object>
         <object>
           <group>Days</group>
+          <group>Yoga</group>
           <name>Monday</name>
         </object>
         <object>
@@ -47,6 +55,7 @@
           <name>Tuesday</name>
         </object>
         <object>
+          <group>Yoga</group>
           <group>Days</group>
           <name>Wednesday</name>
         </object>
@@ -55,6 +64,7 @@
           <name>Thursday</name>
         </object>
         <object>
+          <group>Yoga</group>
           <group>Days</group>
           <name>Friday</name>
         </object>
@@ -62,13 +72,40 @@
           <group>Days</group>
           <name>Saturday</name>
         </object>
+        <object><group>Everything</group><name>picture1</name></object>
+        <object><group>Everything</group><name>picture2</name></object>
+        <object><group>Everything</group><name>picture3</name></object>
+        <object><group>Everything</group><name>picture4</name></object>
+        <object><group>Everything</group><name>picture5</name></object>
+        <object><group>Everything</group><name>picture6</name></object>
+        <object><group>Everything</group><name>picture7</name></object>
+        <object><group>Everything</group><name>picture8</name></object>
+        <object><group>Everything</group><name>picture9</name></object>
+        <object><group>Everything</group><name>picture10</name></object>
+        <object><group>Everything</group><name>picture11</name></object>
+        <object><group>Everything</group><name>picture12</name></object>
+        <object><group>Everything</group><name>picture13</name></object>
+        <object><group>Everything</group><name>picture14</name></object>
+        <object><group>Everything</group><name>picture15</name></object>
+        <object><group>Everything</group><name>picture16</name></object>
+        <object><group>Everything</group><name>picture17</name></object>
+        <object><group>Everything</group><name>picture18</name></object>
+        <object><group>Everything</group><name>picture19</name></object>
+        <object><group>Everything</group><name>picture20</name></object>
+        <object><group>Everything</group><name>picture21</name></object>
+        <object><group>Everything</group><name>finance.txt</name></object>
+        <object><group>Everything</group><name>records.txt</name></object>
+        <object><group>Everything</group><name>important.txt</name></object>
+        <object><group>Everything</group><name>topsecret.txt</name></object>
+        <object><group>Everything</group><name>timing.txt</name></object>
       </objects>
       <roles>
-        <role description="Everyone gets put into this role">
-          <name>Member</name>
-          <permission description="Read rights for Dwarfs and Weekdays all Members">
+        <role>
+          <name>Employee</name>
+          <permission>
             <type>Read</type>
-            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Users</target>
+            <target type="objectGroup">Yoga</target>
             <target type="object">Monday</target>
             <target type="object">Tuesday</target>
             <target type="object">Wednesday</target>
@@ -77,139 +114,76 @@
           </permission>
           <permission>
             <type>Write</type>
+            <target type="objectGroup">Yoga</target>
             <target type="object">Monday</target>
             <target type="object">Tuesday</target>
             <target type="object">Wednesday</target>
             <target type="object">Thursday</target>
             <target type="object">Friday</target>
           </permission>
-        </role>             <!-- End role 'Member' -->
-        <role description="Only for the elite">
-          <name>Admin</name>
-          <permission description="Read rights for everything else">
+        </role>
+        <role>
+          <name>Teacher</name>
+          <permission>
             <type>Read</type>
-            <target type="object">Sunday</target>
-            <target type="object">Saturday</target>
+            <target type="objectGroup">Days</target>
           </permission>
-          <permission description="Write rights for everything">
+          <permission>
             <type>Write</type>
             <target type="objectGroup">Days</target>
-            <target type="objectGroup">Dwarfs</target>
           </permission>
-        </role>             <!-- End role 'Admin' -->
+        </role>
+        <role>
+          <name>Owner</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+        </role>
       </roles>
       <subjects>
         <subject>
           <name>Alice</name>
-          <role>Admin</role>
+          <role>Employee</role>
         </subject>
         <subject>
           <name>Bob</name>
-          <role>Member</role>
+          <role>Teacher</role>
         </subject>
         <subject>
-          <name>Charlie</name>
-          <role>Member</role>
+          <name>Cindy</name>
+          <role>Owner</role>
         </subject>
         <subject>
           <name>Diana</name>
+          <role>Employee</role>
         </subject>
       </subjects>
     </data>
     <policies>
       <hierarchy>
-        <if>Admin</if>
-        <then>Member</then>
+        <if>Owner</if>
+        <then>Employee</then>
       </hierarchy>
-      <delegation>
-        <if>Admin</if>
-        <from>Work</from>
-        <then>Admin</then>
-        <to>School</to>
-      </delegation>
-    </policies>
-  </entity>                 <!-- End school entity -->
-  <entity name="Work">      <!-- Begin work entity -->
-    <data>
-      <objects>
-        <objectGroup><name>Files</name></objectGroup>
-        <objectGroup><name>Pictures</name></objectGroup>
-        <object>
-          <group>Files</group>
-          <name>biography.pdf</name>
-        </object>
-        <object>
-          <group>Files</group>
-          <name>expenses.txt</name>
-        </object>
-        <object>
-          <group>Pictures</group>
-          <name>beach.png</name>
-        </object>
-        <object>
-          <group>Pictures</group>
-          <name>party.jpg</name>
-        </object>
-        <object>
-          <group>Pictures</group>
-          <name>selfie.mov</name>
-        </object>
-      </objects>
-      <roles>
-        <role description="Everyone gets put into this role">
-          <name>User</name>
-          <permission description="Read rights for Pictures all Users">
-            <type>Read</type>
-            <target type="objectGroup">Pictures</target>
-            <target type="object">biography.pdf</target>
-          </permission>
-          <permission>
-            <type>Delete</type>
-            <target type="objectGroup">Pictures</target>
-          </permission>
-        </role>             <!-- End role 'User' -->
-        <role description="Only for the elite">
-          <name>Admin</name>
-          <permission description="Read rights for everything">
-            <type>Read</type>
-            <target type="objectGroup">Pictures</target>
-            <target type="objectGroup">Files</target>
-          </permission>
-          <permission description="Write rights for everything">
-            <type>Write</type>
-            <target type="objectGroup">Pictures</target>
-            <target type="objectGroup">Files</target>
-          </permission>
-          <permission>
-            <type>Delete</type>
-            <target type="objectGroup">Pictures</target>
-            <target type="objectGroup">Files</target>
-          </permission>
-        </role>             <!-- End role 'Admin' -->
-      </roles>
-      <subjects>
-        <subject>
-          <name>Eve</name>
-          <role>Admin</role>
-        </subject>
-        <subject>
-          <name>Frank</name>
-          <role>User</role>
-        </subject>
-        <subject>
-          <name>Diana</name>
-          <role>Admin</role>
-        </subject>
-      </subjects>
-    </data>
-    <policies>
       <hierarchy>
-        <if>Admin</if>
-        <then>User</then>
+        <if>Employee</if>
+        <then>Teacher</then>
       </hierarchy>
       <inference>
-        <if>Pictures</if>
-        <then>Files</then>
+        <if>Days</if>
+        <then>Everything</then>
+      </inference>
+      <inference>
+        <if>Users</if>
+        <then>Everything</then>
+      </inference>
+      <inference>
+        <if>Yoga</if>
+        <then>Everything</then>
       </inference>
     </policies>
   </entity>

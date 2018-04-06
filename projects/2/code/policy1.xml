@@ -1,19 +1,134 @@
 <?xml version="1.0"?>
-<!-- The <root> element simply contains everything and exists for parsing convenience -->
+<!-- This is a very simple structure, modeled after a home usage with a family of four
+        - There are not many objects, mostly pictures, which everyone can access
+        - Otherwise there is some financial info only Mom and Dad can access
+        - Also note that there is no advanced policy writing, mostly just straightforward definition
+-->
 <root>
-    <entity name="Entity 1">
-        <data>
-            <objects>
-              ...       <!-- All object groups and resources go here -->
-            </objects>
-            <roles>
-              ...       <!-- All role groups and permissions go here -->
-            </roles>
-            <subects>
-              ...       <!-- All subjects and their attributes go here -->
-            </subjects>
-        </data>
-        <policies>
-        </policies>
-    </entity>
+  <entity name="Home PC">
+    <data>
+      <objects>
+        <object><name>picture1</name></object>
+        <object><name>picture2</name></object>
+        <object><name>picture3</name></object>
+        <object><name>picture4</name></object>
+        <object><name>picture5</name></object>
+        <object><name>picture6</name></object>
+        <object><name>picture7</name></object>
+        <object><name>picture8</name></object>
+        <object><name>picture9</name></object>
+        <object><name>picture10</name></object>
+        <object><name>picture11</name></object>
+        <object><name>picture12</name></object>
+        <object><name>picture13</name></object>
+        <object><name>picture14</name></object>
+        <object><name>picture15</name></object>
+        <object><name>picture16</name></object>
+        <object><name>picture17</name></object>
+        <object><name>picture18</name></object>
+        <object><name>picture19</name></object>
+        <object><name>picture20</name></object>
+        <object><name>picture21</name></object>
+        <object><name>finance.txt</name></object>
+        <object><name>records.txt</name></object>
+        <object><name>important.txt</name></object>
+        <object><name>topsecret.txt</name></object>
+        <object><name>timing.txt</name></object>
+      </objects>
+      <roles>
+        <role description="The whole family">
+          <name>Member</name>
+          <permission description="Read rights for pics">
+            <type>Read</type>
+            <target type="object">picture1</target>
+            <target type="object">picture2</target>
+            <target type="object">picture3</target>
+            <target type="object">picture4</target>
+            <target type="object">picture5</target>
+            <target type="object">picture6</target>
+            <target type="object">picture7</target>
+            <target type="object">picture8</target>
+            <target type="object">picture9</target>
+            <target type="object">picture10</target>
+            <target type="object">picture11</target>
+            <target type="object">picture12</target>
+            <target type="object">picture13</target>
+            <target type="object">picture14</target>
+            <target type="object">picture15</target>
+            <target type="object">picture16</target>
+            <target type="object">picture17</target>
+            <target type="object">picture18</target>
+            <target type="object">picture19</target>
+            <target type="object">picture20</target>
+            <target type="object">picture21</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="object">picture1</target>
+            <target type="object">picture2</target>
+            <target type="object">picture3</target>
+            <target type="object">picture4</target>
+            <target type="object">picture5</target>
+            <target type="object">picture6</target>
+            <target type="object">picture7</target>
+            <target type="object">picture8</target>
+            <target type="object">picture9</target>
+            <target type="object">picture10</target>
+          </permission>
+        </role>             <!-- End role 'Member' -->
+        <role description="Only for the parents">
+          <name>Parent</name>
+          <permission description="Read rights for everything else">
+            <type>Read</type>
+            <target type="object">finance.txt</target>
+            <target type="object">records.txt</target>
+            <target type="object">important.txt</target>
+            <target type="object">topsecret.txt</target>
+            <target type="object">timing.txt</target>
+          </permission>
+          <permission description="Write rights for everything else">
+            <type>Write</type>
+            <target type="object">picture11</target>
+            <target type="object">picture12</target>
+            <target type="object">picture13</target>
+            <target type="object">picture14</target>
+            <target type="object">picture15</target>
+            <target type="object">picture16</target>
+            <target type="object">picture17</target>
+            <target type="object">picture18</target>
+            <target type="object">picture19</target>
+            <target type="object">picture20</target>
+            <target type="object">picture21</target>
+            <target type="object">finance.txt</target>
+            <target type="object">records.txt</target>
+            <target type="object">important.txt</target>
+            <target type="object">topsecret.txt</target>
+            <target type="object">timing.txt</target>
+          </permission>
+        </role>             <!-- End role 'Admin' -->
+      </roles>
+      <subjects>
+        <subject>
+          <name>Mom</name>
+          <role>Admin</role>
+          <role>Member</role>
+        </subject>
+        <subject>
+          <name>Dad</name>
+          <role>Admin</role>
+          <role>Member</role>
+        </subject>
+        <subject>
+          <name>Alice</name>
+          <role>Member</role>
+        </subject>
+        <subject>
+          <name>Bob</name>
+          <role>Member</role>
+        </subject>
+      </subjects>
+    </data>
+    <policies>
+    </policies>
+  </entity>
 </root>

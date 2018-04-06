@@ -266,6 +266,8 @@ class Entity:
     def l_subjects(self):
         return self.subj_roles
 
+    # TODO: Provide option to print out policies (EASY) 
+
 #------------------------------------------------------------
 # list_objects
 #------------------------------------------------------------
@@ -372,6 +374,3 @@ if __name__ == '__main__':
 
     except IOError as e:
         print("Error: %s" % (e,))
-
-
-        # TODO: Provide option to print out policies (EASY)

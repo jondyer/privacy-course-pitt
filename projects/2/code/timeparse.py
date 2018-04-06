@@ -5,11 +5,11 @@
 # 6 April 2018
 #
 # File:     timeparse.py
-# Usage:    python timeparse.py [policyfile]
+# Usage:    python timeparse.py <policyfile>
 #           (must be a valid policy file)
-# Purpose:  This is the timing version of the parser/preprocessor/
-#           access control interpreting program for the RT variant
-#           defined in the jondyer_p2.pdf document.
+# Purpose:  This is the pared-down timing version of the parser/
+#           preprocessor/access control enforcement engine for the
+#           RT variant defined in the jondyer_p2.pdf document.
 #####################################################################
 import sys
 import xml.etree.ElementTree as ET
@@ -173,62 +173,75 @@ class Entity:
 #-----------------------------------------------------------------
 # access_query
 #-----------------------------------------------------------------
+def access_query(user,resource,access):
 
-def access_query():
-    heading('Access Query')
+    for e, e_obj in all_ents.items():                           # for any entity
+        if resource in e_obj.objects and user in e_obj.subjects:    # if both the object and subject exist there
+            for role in e_obj.roles:                                    # for all roles there
+                if resource in e_obj.role_rights[(role,access)]:            # if the role has that permission for the object
+                    if role in e_obj.subj_roles[user]:                          # and the user has that role
+                        return True                                                 # then we're good to go
+    return False
 
-    try:
-        print('Can user U access file F with privilege P?\nAll inputs are case-sensitive!\n')
-        user = raw_input( 'Please enter the subject (user) name: ' )
-        resource = raw_input( 'Please enter the object (file) name: ')
-        access = raw_input( 'Please enter the type of access (privilege): ')
-    except ValueError:
-        print("\n\n* Invalid choice. Choose again.")
-        return access_query()
-    else:
-        for e, e_obj in all_ents.items():                           # for any entity
-            if resource in e_obj.objects and user in e_obj.subjects:    # if both the object and subject exist there
-                for role in e_obj.roles:                                    # for all roles there
-                    if resource in e_obj.role_rights[(role,access)]:            # if the role has that permission for the object
-                        if role in e_obj.subj_roles[user]:                          # and the user has that role
-                            return True                                                 # then we're good to go
-        return False
-    finally:
-        None
-
-
-# We leverage the fact that in Python functions are first class
-# objects and build a dictionary of functions numerically indexed
-
-actions = { 1:access_query }
 
 
 if __name__ == '__main__':
     try:
-        start_time = time.time()
-        f = sys.argv[1]
-        print('\nStarting to parse and preprocess', f)
-        tree = ET.parse(f)
-        root = tree.getroot()
-        ents = root.findall("*")    # this is a list of entity nodes
+        parse_total = 0
+        query_total = 0
 
-        # we want the entity objects to be globally available, so create them here
-        all_ents = {}               # this is a hash of entity names => objects
-        for e in ents:
-            e_obj = Entity(e)
-            all_ents[e_obj.name] = e_obj
+        user = 'Alice'
+        resource = 'timing.txt'
+        access = 'Write'
 
-        # now because delegation requires that other entities be formed already, we
-        # must wait until after the loop to update any permissions according to delegation
-        for e in all_ents.values():
-            e.delegate()
+        print('\n\nWith query --- User: {0}, Resource: {1}, Access: {2}'.format(user, resource, access))
 
 
-        print('Finished parsing')
-        print("--- %s seconds ---" % (time.time() - start_time))
-        print('Started query')
-        
+        # for best timing results we need to do this many times to get significant amount of time
+        for x in range(1,1+100):
 
+            start_time = time.time()
+            f = sys.argv[1]
+            # print('\nStarting to parse and preprocess', f)
+            tree = ET.parse(f)
+            root = tree.getroot()
+            ents = root.findall("*")    # this is a list of entity nodes
+
+            # we want the entity objects to be globally available, so create them here
+            all_ents = {}               # this is a hash of entity names => objects
+            for e in ents:
+                e_obj = Entity(e)
+                all_ents[e_obj.name] = e_obj
+
+            # now because delegation requires that other entities be formed already, we
+            # must wait until after the loop to update any permissions according to delegation
+            for e in all_ents.values():
+                e.delegate()
+
+
+            # print('Finished parsing')
+            parse_time = time.time()
+            parse_total += (parse_time - start_time)
+
+            # print("--- %s seconds ---\n\n" % (parse_time - start_time))
+
+            # print('Start query --- User: {0}, Resource: {1}, Access: {2}'.format(user, resource, access))
+
+            start_time = time.time()
+
+            if access_query(user,resource,access):
+                # print('\nAllow\n')
+                None
+            else:
+                None
+                # print('\nDeny\n')
+
+            query_time = time.time()
+            query_total += (query_time - start_time)
+
+            # print("--- %s seconds ---\n\n" % (time.time() - query_time))
+
+        print('\nTotal parse time (sec): {0} \nTotal query time (sec): {1} \n\n'.format(parse_total,query_total))
         exit(0)
 
     except IOError as e:

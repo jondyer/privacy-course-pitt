@@ -584,7 +584,7 @@ The utility of this schema is immediately apparent. For more details on usage of
 \subsection{Role Hierarchies}
 This property was first introduced in the policies section of \textbf{W1}, and is relatively straightforward in all its variant.
 
-\paragraph{Simple}
+\subsubsection{Simple}
 At its simplest, it comprises an implication from one role to another, which can also be considered a textit{delegation} of authority from one (the dominating role) role to another (the containing role).
 \begin{lstlisting}
 <policies>
@@ -596,7 +596,7 @@ At its simplest, it comprises an implication from one role to another, which can
 \end{lstlisting}
 This policy automatically makes every Admin subject a User subject as well, adding all User permissions to the Admin role in some sense. Thus there is no need to specify on definition that a given subject is both an Admin \textit{and} a User; simply indicate the Admin role and the subject will be given User privileges by default. On large-scale systems this single rule may replace a great deal of typing.
 
-\paragraph{Hierarchy Chains}
+\subsubsection{Hierarchy Chains}
 A more interesting variant comprises multiple hierarchical inferences within an entity, resulting in a chain of internal delegation. This allows, as with logical objects, a more flexible and powerful specification of roles.
 \begin{lstlisting}
 <policies>

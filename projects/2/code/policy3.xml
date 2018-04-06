@@ -1,19 +1,15 @@
 <?xml version="1.0"?>
-<!-- The <root> element simply contains everything and exists for parsing convenience -->
+<!-- This file contains very many entities (12) and is intended to demonstrate a complexity of
+     role hierarchies and delegation. Each entity has a few objects (7 dwarves, 7 days,
+     7 pictures, and 7 printers) and a number of roles which are variously delegated throughout -->
 <root>
-  <entity name="School">
+  <entity name="E1">
     <data>
       <objects>
         <objectGroup><name>Dwarfs</name></objectGroup>
         <objectGroup><name>Days</name></objectGroup>
-        <object>
-          <group>Dwarfs</group>
-          <name>Grumpy</name>
-        </object>
-        <object>
-          <group>Dwarfs</group>
-          <name>Happy</name>
-        </object>
+        <object><group>Dwarfs</group><name>Grumpy</name></object>
+        <object><group>Dwarfs</group><name>Happy</name></object>
         <object>
           <group>Dwarfs</group>
           <name>Sleepy</name>

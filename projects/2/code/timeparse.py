@@ -4,112 +4,16 @@
 # Project 2
 # 6 April 2018
 #
-# File:     parser.py
-# Usage:    python parser.py [policyfile]
-#           Run with valid policy file or with no args to get prompt
-#           (run in same directory as policy file for best results)
-# Purpose:  This is the parser/preprocessor/access control
-#           interpreting program for the RT variant defined in
-#           the jondyer_p2.pdf document.
-#
-#           Tested using Python 2.7 and Python 3.5 -- it is not very
-#           robust, so don't go typing random values ;) It also
-#           depends on the policy file being well-formed, so be sure
-#           to read the document mentioned above.
+# File:     timeparse.py
+# Usage:    python timeparse.py [policyfile]
+#           (must be a valid policy file)
+# Purpose:  This is the timing version of the parser/preprocessor/
+#           access control interpreting program for the RT variant
+#           defined in the jondyer_p2.pdf document.
 #####################################################################
 import sys
 import xml.etree.ElementTree as ET
-
-#-----------------------------------------------------------
-# Some auxiliary functions for debugging/helpfulness:
-#-----------------------------------------------------------
-def heading(str):
-    print('-'*60)
-    print("** %s:" % (str,))
-    print('-'*60)
-
-def print_rows(rows):
-    for row in rows:
-        print(row)
-
-#------------------------------------------------------------
-# show_menu
-#------------------------------------------------------------
-def show_menu():
-    menu = '''
---------------------------------------------------
-1. List objects
-2. List groups
----
-3. List roles
-4. List subjects
----
-5. Make an access query
-
-
-Choose (1-7, 0 to quit): '''
-
-    try:
-        choice = int(input( menu ))
-    except ValueError:
-        print("\n\n* Invalid choice. Choose again.")
-        show_menu()
-    else:
-        if choice == 0:
-            print('Done.')
-            exit(0)
-        elif choice in range(1,1+4):
-            e = get_entity_menu()
-            actions[choice](e)
-            show_menu()
-        elif choice == 5:
-            if actions[choice]():
-                print('\n\nAllow')
-            else:
-                print('\n\nDeny')
-            show_menu()
-        else:
-            print("\n\n* Invalid choice (%s). Choose again." % choice)
-            show_menu()
-    finally:
-        None
-
-
-#------------------------------------------------------------
-# get_entity_menu
-#------------------------------------------------------------
-def get_entity_menu():
-    menu_1 = '''
---------------------------------------------------
-Please select an entity:
-'''
-    menu_2 = '''
-Choose a value (0 to exit): '''
-    try:
-        print( menu_1 )
-        i = 1
-        for x in ents:
-            n = x.get('name')
-            print('{0:2d}: {1}'.format(i, n))
-            i += 1
-
-        choice = int(input( menu_2 ))
-    except ValueError:
-        print("\n\n* Invalid choice. Choose again.")
-        return get_entity_menu()
-    else:
-        if choice == 0:
-            print('Done.')
-            exit(0)
-        elif choice in range(1,1+i):
-            node = ents[choice-1].get('name')
-            return all_ents[node]
-        else:
-            print("\n\n* Invalid choice (%s). Choose again." % choice)
-            return get_entity_menu()
-    finally:
-        None
-
+import time
 
 #-----------------------------------------------------------
 # Now let's really have some fun.
@@ -266,52 +170,6 @@ class Entity:
     def l_subjects(self):
         return self.subj_roles
 
-#------------------------------------------------------------
-# list_objects
-#------------------------------------------------------------
-def list_objects_menu(entity):
-    heading('List Objects')
-
-    for name, gps_set in entity.l_objects().items():
-        print('\nName:   {0}\nGroups: {1}'.format(name, list(gps_set)))
-
-
-#------------------------------------------------------------
-# list_object_groups
-#------------------------------------------------------------
-def list_groups_menu(entity):
-    heading('List Groups')
-
-    for gp, obj_set in entity.l_groups().items():
-        print('\nGroup:   {0}\nObjects: {1}'.format(gp, list(obj_set)))
-
-
-#------------------------------------------------------------
-# list_roles
-#------------------------------------------------------------
-def list_roles_menu(entity):
-    heading('List Roles')
-
-    # TODO: Change this so it prints each role at once -- may have to switch to nested dicts
-    for tup, obj_set in entity.l_roles().items():
-        name, access = tup
-        print('\nName:    {0}\nAccess:  {1}\nObjects: {2}'.format(name, access, list(obj_set)))
-
-
-    # for row in rows:
-    #     id, first, last, email = row
-    #     print("%s. %s, %s (%s)" % (id, last, first, email))
-
-#------------------------------------------------------------
-# list_subjects
-#------------------------------------------------------------
-def list_subjects_menu(entity):
-    heading('List Subjects')
-
-    for name, sub_set in entity.l_subjects().items():
-        print('\nSubject: {0}\nRoles:   {1}'.format(name, list(sub_set)))
-
-
 #-----------------------------------------------------------------
 # access_query
 #-----------------------------------------------------------------
@@ -321,9 +179,9 @@ def access_query():
 
     try:
         print('Can user U access file F with privilege P?\nAll inputs are case-sensitive!\n')
-        user = str(input( 'Please enter the subject (user) name: ' ))
-        resource = str(input( 'Please enter the object (file) name: '))
-        access = str(input( 'Please enter the type of access (privilege): '))
+        user = raw_input( 'Please enter the subject (user) name: ' )
+        resource = raw_input( 'Please enter the object (file) name: ')
+        access = raw_input( 'Please enter the type of access (privilege): ')
     except ValueError:
         print("\n\n* Invalid choice. Choose again.")
         return access_query()
@@ -342,16 +200,14 @@ def access_query():
 # We leverage the fact that in Python functions are first class
 # objects and build a dictionary of functions numerically indexed
 
-actions = { 1:list_objects_menu,    2:list_groups_menu,   3:list_roles_menu,
-            4:list_subjects_menu,  5:access_query }
+actions = { 1:access_query }
 
 
 if __name__ == '__main__':
     try:
-        if len(sys.argv) >=2:       # command-line usage
-            f = sys.argv[1]
-        else:
-            f = str(input("Please enter the relative filepath: "))
+        start_time = time.time()
+        f = sys.argv[1]
+        print('\nStarting to parse and preprocess', f)
         tree = ET.parse(f)
         root = tree.getroot()
         ents = root.findall("*")    # this is a list of entity nodes
@@ -367,11 +223,13 @@ if __name__ == '__main__':
         for e in all_ents.values():
             e.delegate()
 
-        show_menu()
 
+        print('Finished parsing')
+        print("--- %s seconds ---" % (time.time() - start_time))
+        print('Started query')
+        
+
+        exit(0)
 
     except IOError as e:
         print("Error: %s" % (e,))
-
-
-        # TODO: Provide option to print out policies (EASY)

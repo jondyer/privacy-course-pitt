@@ -1,0 +1,216 @@
+<?xml version="1.0"?>
+<!-- The <root> element simply contains everything and exists for parsing convenience -->
+<root>
+  <entity name="School">
+    <data>
+      <objects>
+        <objectGroup><name>Dwarfs</name></objectGroup>
+        <objectGroup><name>Days</name></objectGroup>
+        <object>
+          <group>Dwarfs</group>
+          <name>Grumpy</name>
+        </object>
+        <object>
+          <group>Dwarfs</group>
+          <name>Happy</name>
+        </object>
+        <object>
+          <group>Dwarfs</group>
+          <name>Sleepy</name>
+        </object>
+        <object>
+          <group>Dwarfs</group>
+          <name>Bashful</name>
+        </object>
+        <object>
+          <group>Dwarfs</group>
+          <name>Sneezy</name>
+        </object>
+        <object>
+          <group>Dwarfs</group>
+          <name>Dopey</name>
+        </object>
+        <object>
+          <group>Dwarfs</group>
+          <name>Doc</name>
+        </object>
+        <object>
+          <group>Days</group>
+          <name>Sunday</name>
+        </object>
+        <object>
+          <group>Days</group>
+          <name>Monday</name>
+        </object>
+        <object>
+          <group>Days</group>
+          <name>Tuesday</name>
+        </object>
+        <object>
+          <group>Days</group>
+          <name>Wednesday</name>
+        </object>
+        <object>
+          <group>Days</group>
+          <name>Thursday</name>
+        </object>
+        <object>
+          <group>Days</group>
+          <name>Friday</name>
+        </object>
+        <object>
+          <group>Days</group>
+          <name>Saturday</name>
+        </object>
+      </objects>
+      <roles>
+        <role description="Everyone gets put into this role">
+          <name>Member</name>
+          <permission description="Read rights for Dwarfs and Weekdays all Members">
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="object">Monday</target>
+            <target type="object">Tuesday</target>
+            <target type="object">Wednesday</target>
+            <target type="object">Thursday</target>
+            <target type="object">Friday</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="object">Monday</target>
+            <target type="object">Tuesday</target>
+            <target type="object">Wednesday</target>
+            <target type="object">Thursday</target>
+            <target type="object">Friday</target>
+          </permission>
+        </role>             <!-- End role 'Member' -->
+        <role description="Only for the elite">
+          <name>Admin</name>
+          <permission description="Read rights for everything else">
+            <type>Read</type>
+            <target type="object">Sunday</target>
+            <target type="object">Saturday</target>
+          </permission>
+          <permission description="Write rights for everything">
+            <type>Write</type>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Dwarfs</target>
+          </permission>
+        </role>             <!-- End role 'Admin' -->
+      </roles>
+      <subjects>
+        <subject>
+          <name>Alice</name>
+          <role>Admin</role>
+        </subject>
+        <subject>
+          <name>Bob</name>
+          <role>Member</role>
+        </subject>
+        <subject>
+          <name>Charlie</name>
+          <role>Member</role>
+        </subject>
+        <subject>
+          <name>Diana</name>
+        </subject>
+      </subjects>
+    </data>
+    <policies>
+      <hierarchy>
+        <if>Admin</if>
+        <then>Member</then>
+      </hierarchy>
+      <delegation>
+        <if>Admin</if>
+        <from>Work</from>
+        <then>Admin</then>
+        <to>School</to>
+      </delegation>
+    </policies>
+  </entity>                 <!-- End school entity -->
+  <entity name="Work">      <!-- Begin work entity -->
+    <data>
+      <objects>
+        <objectGroup><name>Files</name></objectGroup>
+        <objectGroup><name>Pictures</name></objectGroup>
+        <object>
+          <group>Files</group>
+          <name>biography.pdf</name>
+        </object>
+        <object>
+          <group>Files</group>
+          <name>expenses.txt</name>
+        </object>
+        <object>
+          <group>Pictures</group>
+          <name>beach.png</name>
+        </object>
+        <object>
+          <group>Pictures</group>
+          <name>party.jpg</name>
+        </object>
+        <object>
+          <group>Pictures</group>
+          <name>selfie.mov</name>
+        </object>
+      </objects>
+      <roles>
+        <role description="Everyone gets put into this role">
+          <name>User</name>
+          <permission description="Read rights for Pictures all Users">
+            <type>Read</type>
+            <target type="objectGroup">Pictures</target>
+            <target type="object">biography.pdf</target>
+          </permission>
+          <permission>
+            <type>Delete</type>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+        </role>             <!-- End role 'User' -->
+        <role description="Only for the elite">
+          <name>Admin</name>
+          <permission description="Read rights for everything">
+            <type>Read</type>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Files</target>
+          </permission>
+          <permission description="Write rights for everything">
+            <type>Write</type>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Files</target>
+          </permission>
+          <permission>
+            <type>Delete</type>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Files</target>
+          </permission>
+        </role>             <!-- End role 'Admin' -->
+      </roles>
+      <subjects>
+        <subject>
+          <name>Eve</name>
+          <role>Admin</role>
+        </subject>
+        <subject>
+          <name>Frank</name>
+          <role>User</role>
+        </subject>
+        <subject>
+          <name>Diana</name>
+          <role>Admin</role>
+        </subject>
+      </subjects>
+    </data>
+    <policies>
+      <hierarchy>
+        <if>Admin</if>
+        <then>User</then>
+      </hierarchy>
+      <inference>
+        <if>Pictures</if>
+        <then>Files</then>
+      </inference>
+    </policies>
+  </entity>
+</root>

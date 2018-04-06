@@ -320,7 +320,6 @@ The use of roles is quite simple, as the following two samples shall illustrate.
 \subsubsection{Simple}
 Our first example is of the most basic usage. We define a few roles in terms of their permissions or privileges over several individual objects (assumed to be previously defined), and then assign those roles variously to subjects as we wish.
 \begin{lstlisting}
-...
 <roles>
     <role description="This is a general User role">
         <name>User</name>
@@ -389,8 +388,8 @@ Our first example is of the most basic usage. We define a few roles in terms of 
     </subject>
     ...
 </subjects>
-...
 \end{lstlisting}
+
 This schema allows us to specify just once which objects are accessible by which roles. Then we assign a subject to zero or more roles (which include groups of permissions) rather than directly to permissions one at a time. So in the above example Alice, Bob, and Charlie have all the permissions specified by the role 'User', Alice also has the permissions given by 'Admin' (note that these may overlap), and Diana has been given no permissions.
 This is by contrast to a capability-based or ACL-based system, for example, which might require that we explicitly link all subjects with all objects they can access, entailing a large amount of repeated effort.
 
@@ -398,55 +397,52 @@ This is by contrast to a capability-based or ACL-based system, for example, whic
 An even more effective way to use roles to provide indirection is by combining them with logical objects, or object groups. More details on how to represent object groups have been given above, as well as in \textbf{W5},
 so here we will simply assume that \inlinecode{file1.txt}, \inlinecode{file2.txt}, and \inlinecode{file3.txt} have all been assigned the group 'Files'. We also suppose that \inlinecode{special.txt} and \inlinecode{secret.txt} belong to the group 'Important Files', and that the device \inlinecode{/dev/null} does not belong to any groups. Notice below how we are able to assign the same permissions as above with even fewer lines! \pagebreak
 \begin{lstlisting}
-...
-<roles>
-    <role description="This is a general User role">
-        <name>User</name>
-        <permission description="Read rights for all Users on files in group 'Files'">
-            <type>Read</type>
-            <target type="objectGroup">Files</target>
-        </permission>
-        <permission description="Write rights for all Users for null device">
-            <type>Write</type>
-            <target type="object">/dev/null</target>
-        </permission>
-        <permission description="Append rights for all Users for files in group 'Files'">
-            <type>Append</type>
-            <target type="objectGroup">Files</target>
-        </permission>
-  </role>             <!-- End role 'User' -->
-  <role description="This is a more powerful Admin role">
-      <name>Admin</name>
-      <permission description="Read rights for 'Files' plus 'Important files'">
-          <type>Read</type>
-          <target type="objectGroup">Files</target>
-          <target type="objectGroup">Important Files</target>
-      </permission>
-      <permission description="Write rights for everything">
-          <type>Write</type>
-          <target type="objectGroup">Files</target>
-          <target type="objectGroup">Important Files</target>
-          <target type="object">/dev/null</target>
-      </permission>
-      <permission description="Delete rights for all files"
-          <type>Delete</type>
-          <target type="objectGroup">Files</target>
-          <target type="objectGroup">Important Files</target>
-      </permission>
-  </role>             <!-- End role 'Admin' -->
-...
+<role description="This is a general User role">
+    <name>User</name>
+    <permission description="Read rights for all Users on files in group 'Files'">
+        <type>Read</type>
+        <target type="objectGroup">Files</target>
+    </permission>
+    <permission description="Write rights for all Users for null device">
+        <type>Write</type>
+        <target type="object">/dev/null</target>
+    </permission>
+    <permission description="Append rights for all Users for files in group 'Files'">
+        <type>Append</type>
+        <target type="objectGroup">Files</target>
+    </permission>
+</role>             <!-- End role 'User' -->
+<role description="This is a more powerful Admin role">
+  <name>Admin</name>
+  <permission description="Read rights for 'Files' plus 'Important files'">
+      <type>Read</type>
+      <target type="objectGroup">Files</target>
+      <target type="objectGroup">Important Files</target>
+  </permission>
+  <permission description="Write rights for everything">
+      <type>Write</type>
+      <target type="objectGroup">Files</target>
+      <target type="objectGroup">Important Files</target>
+      <target type="object">/dev/null</target>
+  </permission>
+  <permission description="Delete rights for all files"
+      <type>Delete</type>
+      <target type="objectGroup">Files</target>
+      <target type="objectGroup">Important Files</target>
+  </permission>
+</role>             <!-- End role 'Admin' -->
 \end{lstlisting}
-Afterwards, roles can be given to users the same as before. See how much simpler it is to specify large groups of objects to be assigned? Many objects share similar properties that make it useful to be able to specify sets of them, so it is important to note these properties when you are defining the objects (see Object Groups in \textbf{W5} for more info). However, as with \inlinecode{/dev/null} above, objects without a group must still be included in a \inlinecode{<permission>} individually. Finally, role hierarchies and attribute inference make the process of assigning permissions even easier and more flexible -- see \textbf{W5} for further info on each of those as well.
+Afterwards, roles can be given to users the same as before. See how much simpler it is to specify large groups of objects to be assigned? It is important to note useful properties when you are defining objects (see Object Groups in \textbf{W5} for more info). However, as with \inlinecode{/dev/null} above, objects without a group must still be included in a \inlinecode{<permission>} individually. Finally, role hierarchies and attribute inference make the process of assigning permissions even easier and more flexible -- see \textbf{W5} for further info on each of those as well.
 
-\bigskip
 
 \task{W4}
 \subsection{Delegation}
 Now we tackle delegations across entities. We will assume that the entity being delegated \textit{to} and the entity being delegated \textit{from} are distinct, since otherwise we have a case of role hierarchy (which \textit{can} be specified here, but should be placed in its own type of policy -- see \textbf{W5} for further details).
+\paragraph{Note 1:} Do NOT attempt to delegate "in circles" or you run the risk of causing an endless loop, crashing the enforcement engine. Chains of trust are acceptable, but delegating authority for a role between two entities and then back again is not recommended.
+\paragraph{Note 2:} All delegation of authority (i.e. 'importing' roles from another entity, so to speak) must take place \textit{within} the 'to' entity. This only makes sense -- an organization should not be able to give its members roles in another organization that it doesn't control. This provides for better support in distributed environments.
 
 \subsubsection{Simple Delegation}
-The basic form of delegation is from a role in one entity to the same role in another entity. This is easily accomplished as shown below, in the \inlinecode{Policies} section of the file. Suppose we have described two entities in our file, 'Work' and 'School', and we want all Work administrators to automatically be School administrators as well (i.e. if in the 'Admin' role at Work, then in the 'Admin' role at School).
-\pagebreak
+The basic form of delegation is from a role in one entity to the same role in another entity. This is easily accomplished as shown below, in the \inlinecode{Policies} section of the file. Suppose we have described two entities in our file, 'Work' and 'School', and we want all Work administrators to automatically be School administrators as well.
 
 \begin{lstlisting}
 ...
@@ -461,13 +457,165 @@ The basic form of delegation is from a role in one entity to the same role in an
 </policies>
 ...
 \end{lstlisting}
-See how we simply use the conditional form of the policy statement (above) to guide our design of the policy. We simply take the 'if-then' statement and describe both the role and the entity on both sides of the implication, resulting in something like "{If} \{role\} {from} \{entity\} {then} \{role\} {to} \{entity\}."
+We use the conditional form of the policy statement to guide our design. Simply take the 'if-then' statement and describe both role and identity in each half of the implication, resulting in "If \{Entity\}.\{Role\} then \{Entity\}.\{Role\}."
 
+\subsubsection{Cross-Role Delegation}
+A more complex usage of delegation may take the form of giving authority over a role in one entity to a different role in another entity. It even involve chains of trust through multiple organizations, as in the following example. Suppose that there are three entities in the file: 'Gloogle' and two Gloogle departments 'Research' and 'Games'. Suppose also that we want the following relationships between roles to hold (using the format \{Entity\}.\{Role\} implies \{Entity\}.\{Role\}):
+\begin{itemize}\tightlist
+  \item Gloogle.Admin $\rightarrow$ Research.Admin
+  \item Games.Manager $\rightarrow$ Gloogle.Admin
+  \item Research.Scientist $\rightarrow$ Gloogle.User
+  \item Games.Player $\rightarrow$ Gloogle.User
+\end{itemize}
+Then we may represent these in the following way:
+\begin{lstlisting}
+<entity name="Research">
+    ...
+    <policies>
+        <delegation>
+            <if>Admin</if>
+            <from>Gloogle</from>
+            <then>Admin</then>
+            <to>Research</to>
+        </delegation>
+    </policies>
+</entity>
+<entity name="Gloogle">
+    ...
+    <policies>
+        <delegation>
+            <if>Manager</if>
+            <from>Games</from>
+            <then>Admin</then>
+            <to>Gloogle</to>
+        </delegation>
+        <delegation>
+            <if>Scientist</if>
+            <from>Research</from>
+            <then>User</then>
+            <to>Gloogle</to>
+        </delegation>
+        <delegation>
+            <if>Player</if>
+            <from>Games</from>
+            <then>User</then>
+            <to>Gloogle</to>
+        </delegation>
+    </policies>
+</entity>
+\end{lstlisting}
+Note that the \inlinecode{<to>} field always matches the entity within which it is described.
 
 
 \task{W5}
-Explain with examples how to implement \textit{2 other features}.
+\subsection{Logical Objects}
+Here we explore a very useful feature contributed from the $\RT_2$ variant, namely logical objects or object groups. This feature is actually made use of in the section on indirection (\textbf{W3}), but here we examine it more closely in the form of two different examples. \par
 
+\subsubsection{Simple}
+Object groups are easy to use, and are in fact defined in the \inlinecode{<data>} section of an entity. The simplest usage would be to assign every object to just one group, then referring to multiple groups later on (say, in \inlinecode{<roles>}) if a union of groups is desired. This is represented simply by first defining the object groups and then, when describing objects, by adding the sub-element \inlinecode{<group>}:
+\begin{lstlisting}
+<objects>
+    <objectGroup description="This group is for regular old files">
+        <name>Files</name>
+    </objectGroup>
+    <objectGroup description="This group is for special files">
+        <name>Special</name>
+    </objectGroup>
+    <objectGroup description="This group is for devices">
+        <name>Devices</name>
+    </objectGroup>
+    <object>
+        <name>file1</name>
+        <group>Files</group>
+    </object>
+    <object>
+        <name>spec2</name>
+        <group>Special</group>
+    </object>
+    <object>
+        <name>dev3</name>
+        <group>Devices</group>
+    </object>
+    ...
+    <object description="This object has no group">
+        <name>strangeObject.computer</name>
+    </object>
+</objects>
+\end{lstlisting}
+Note that not every object must have a group, as in the last object above. Later, we may use object group names to assign permissons to the entire group instead of individually (see section \textbf{W1} for details on \inlinecode{<role>} usage).
+
+\subsubsection{Multiple Groups}
+The more advanced and powerful way of utilizing logical objects is by assigning multiple groups to every object.
+For example, suppose you want to be able to refer to every object in an entity, as well as certain subsets.
+This is possible by adding as many groups -- and hence assigning as many groups to an object -- as you would like.
+\begin{lstlisting}
+<objects>
+    <objectGroup description="This group is for everything">
+        <name>All</name>
+    </objectGroup>
+    <objectGroup description="This group is for files">
+        <name>Files</name>
+    </objectGroup>
+    <objectGroup description="This group is for all objects related to school">
+        <name>School</name>
+    </objectGroup>
+    <object>
+        <name>file1.home</name>
+        <group>Files</group>
+        <group>All</group>
+    </object>
+    <object>
+        <name>file2.school</name>
+        <group>School</group>
+        <group>Files</group>
+        <group>All</group>
+    </object>
+    <object>
+        <name>dev3</name>
+        <group>School</group>
+        <group>All</group>
+    </object>
+    ...
+</objects>
+\end{lstlisting}
+Now we have great flexibility and power when selecting objects. If we choose the group 'All', then we can specify every object (so long as they all are assigned to that group, as above). If we choose the 'Files' group, then we can get \inlinecode{file1} and \inlinecode{file2} without selecting \inlinecode{dev3}, and if we choose 'School' then we can get all school-related objects whether or not they are files.
+The utility of this schema is immediately apparent. For more details on usage of logical objects when assigning them to roles, refer to the roles section in \textbf{W1}.
+
+\subsection{Role Hierarchies}
+This property was first introduced in the policies section of \textbf{W1}, and is relatively straightforward in all its variant.
+
+\paragraph{Simple}
+At its simplest, it comprises an implication from one role to another, which can also be considered a textit{delegation} of authority from one (the dominating role) role to another (the containing role).
+\begin{lstlisting}
+<policies>
+    <hierarchy>
+        <if>Admin</if>
+        <then>User</then>
+    </hierarchy>
+</policies>
+\end{lstlisting}
+This policy automatically makes every Admin subject a User subject as well, adding all User permissions to the Admin role in some sense. Thus there is no need to specify on definition that a given subject is both an Admin \textit{and} a User; simply indicate the Admin role and the subject will be given User privileges by default. On large-scale systems this single rule may replace a great deal of typing.
+
+\paragraph{Hierarchy Chains}
+A more interesting variant comprises multiple hierarchical inferences within an entity, resulting in a chain of internal delegation. This allows, as with logical objects, a more flexible and powerful specification of roles.
+\begin{lstlisting}
+<policies>
+    <hierarchy>
+        <if>Admin</if>
+        <then>User</then>
+    </hierarchy>
+    <hierarchy>
+        <if>Admin</if>
+        <then>Manager</then>
+    </hierarchy>
+    <hierarchy>
+        <if>Manager</if>
+        <then>User</then>
+    </hierarchy>
+</policies>
+\end{lstlisting}
+Here we've defined a multi-level hierarchy that includes all administrators as managers and users, and includes all managers as users.
+This feature can be modified to indefinite complexity, depending on the needs of the organization and the number/relationship of the roles therein. \\
 
 \section{Task W7}
 Filler.

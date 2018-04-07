@@ -1,212 +1,1347 @@
 <?xml version="1.0"?>
-<!-- This file contains very many entities (12) and is intended to demonstrate a complexity of
+<!-- This file contains 7 newspaper entities and is intended to demonstrate a complexity of
      role hierarchies and delegation. Each entity has a few objects (7 dwarves, 7 days,
      7 pictures, and 7 printers) and a number of roles which are variously delegated throughout -->
 <root>
+  <entity name="HQ">
+    <data>
+      <objects>
+        <objectGroup><name>Dwarfs</name></objectGroup>
+        <objectGroup><name>Days</name></objectGroup>
+        <objectGroup><name>Pictures</name></objectGroup>
+        <objectGroup><name>Printers</name></objectGroup>
+        <objectGroup><name>Secrets</name></objectGroup>
+        <objectGroup><name>Everything</name></objectGroup>
+        <object><group>Everything</group><group>Dwarfs</group><name>Grumpy</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Happy</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Sleepy</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Bashful</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Sneezy</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Dopey</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Doc</name></object>
+        <object><group>Everything</group><group>Days</group><name>Sunday</name></object>
+        <object><group>Everything</group><group>Days</group><name>Monday</name></object>
+        <object><group>Everything</group><group>Days</group><name>Tuesday</name></object>
+        <object><group>Everything</group><group>Days</group><name>Wednesday</name></object>
+        <object><group>Everything</group><group>Days</group><name>Thursday</name></object>
+        <object><group>Everything</group><group>Days</group><name>Friday</name></object>
+        <object><group>Everything</group><group>Days</group><name>Saturday</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture1</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture2</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture3</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture4</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture5</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture6</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture7</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer1</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer2</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer3</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer4</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer5</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer6</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer7</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>finance.txt</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>records.txt</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>important.txt</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>topsecret.txt</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>timing.txt</name></object>
+      </objects>
+      <roles>
+        <role description="This is the SuperAdmin: the Admin of HQ">
+          <name>SuperAdmin</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Delete</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Publish</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+        </role>             <!-- End role 'SuperAdmin' -->
+        <role description="This guy likes to think he has all the power">
+          <name>Editor</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+          </permission>
+          <permission>
+            <type>Delete</type>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+        </role>             <!-- End role 'Editor' -->
+        <role description="These people can read and write some things">
+          <name>Writer</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+        </role>             <!-- End role 'Writer' -->
+        <role description="Dunno what these folks are doing">
+          <name>Peon</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+        </role>             <!-- End role 'Peon' -->
+        <role description="Power behind the throne">
+          <name>Accountant</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Secrets</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="object">finance.txt</target>
+            <target type="object">records.txt</target>
+          </permission>
+        </role>             <!-- End role 'Accountant' -->
+      </roles>
+      <subjects>
+        <subject>
+          <name>Alice</name>
+          <role>SuperAdmin</role>
+        </subject>
+        <subject>
+          <name>Bob</name>
+          <role>Editor</role>
+        </subject>
+        <subject>
+          <name>Charlie</name>
+          <role>Writer</role>
+        </subject>
+        <subject>
+          <name>Diana</name>
+          <role>Writer</role>
+        </subject>
+        <subject>
+          <name>Eve</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>Frank</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>George</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>Arnold</name>
+          <role>Accountant</role>
+        </subject>
+      </subjects>
+    </data>
+    <policies>
+      <hierarchy>
+        <if>SuperAdmin</if>
+        <then>Editor</then>
+      </hierarchy>
+      <hierarchy>
+        <if>Editor</if>
+        <then>Writer</then>
+      </hierarchy>
+      <hierarchy>
+        <if>Accountant</if>
+        <then>Peon</then>
+      </hierarchy>
+      <delegation>
+        <if>Admin</if>
+        <from>E1</from>
+        <then>Writer</then>
+        <to>HQ</to>
+      </delegation>
+      <delegation>
+        <if>Editor</if>
+        <from>E1</from>
+        <then>Peon</then>
+        <to>HQ</to>
+      </delegation>
+      <delegation>
+        <if>Admin</if>
+        <from>E2</from>
+        <then>Peon</then>
+        <to>HQ</to>
+      </delegation>
+    </policies>
+  </entity>                 <!-- End HQ entity -->
   <entity name="E1">
     <data>
       <objects>
         <objectGroup><name>Dwarfs</name></objectGroup>
         <objectGroup><name>Days</name></objectGroup>
-        <object><group>Dwarfs</group><name>Grumpy</name></object>
-        <object><group>Dwarfs</group><name>Happy</name></object>
-        <object>
-          <group>Dwarfs</group>
-          <name>Sleepy</name>
-        </object>
-        <object>
-          <group>Dwarfs</group>
-          <name>Bashful</name>
-        </object>
-        <object>
-          <group>Dwarfs</group>
-          <name>Sneezy</name>
-        </object>
-        <object>
-          <group>Dwarfs</group>
-          <name>Dopey</name>
-        </object>
-        <object>
-          <group>Dwarfs</group>
-          <name>Doc</name>
-        </object>
-        <object>
-          <group>Days</group>
-          <name>Sunday</name>
-        </object>
-        <object>
-          <group>Days</group>
-          <name>Monday</name>
-        </object>
-        <object>
-          <group>Days</group>
-          <name>Tuesday</name>
-        </object>
-        <object>
-          <group>Days</group>
-          <name>Wednesday</name>
-        </object>
-        <object>
-          <group>Days</group>
-          <name>Thursday</name>
-        </object>
-        <object>
-          <group>Days</group>
-          <name>Friday</name>
-        </object>
-        <object>
-          <group>Days</group>
-          <name>Saturday</name>
-        </object>
+        <objectGroup><name>Pictures</name></objectGroup>
+        <objectGroup><name>Printers</name></objectGroup>
+        <objectGroup><name>Secrets</name></objectGroup>
+        <objectGroup><name>Everything</name></objectGroup>
+        <object><group>Everything</group><group>Dwarfs</group><name>Grumpy1</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Happy1</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Sleepy1</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Bashful1</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Sneezy1</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Dopey1</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Doc1</name></object>
+        <object><group>Everything</group><group>Days</group><name>Sunday1</name></object>
+        <object><group>Everything</group><group>Days</group><name>Monday1</name></object>
+        <object><group>Everything</group><group>Days</group><name>Tuesday1</name></object>
+        <object><group>Everything</group><group>Days</group><name>Wednesday1</name></object>
+        <object><group>Everything</group><group>Days</group><name>Thursday1</name></object>
+        <object><group>Everything</group><group>Days</group><name>Friday1</name></object>
+        <object><group>Everything</group><group>Days</group><name>Saturday1</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture11</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture21</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture31</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture41</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture51</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture61</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture71</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer11</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer21</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer31</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer41</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer51</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer61</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer71</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>finance.txt</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>records.txt</name></object>
       </objects>
       <roles>
-        <role description="Everyone gets put into this role">
-          <name>Member</name>
-          <permission description="Read rights for Dwarfs and Weekdays all Members">
+        <role description="This is Admin">
+          <name>Admin</name>
+          <permission>
             <type>Read</type>
-            <target type="objectGroup">Dwarfs</target>
-            <target type="object">Monday</target>
-            <target type="object">Tuesday</target>
-            <target type="object">Wednesday</target>
-            <target type="object">Thursday</target>
-            <target type="object">Friday</target>
+            <target type="objectGroup">Everything</target>
           </permission>
           <permission>
             <type>Write</type>
-            <target type="object">Monday</target>
-            <target type="object">Tuesday</target>
-            <target type="object">Wednesday</target>
-            <target type="object">Thursday</target>
-            <target type="object">Friday</target>
+            <target type="objectGroup">Everything</target>
           </permission>
-        </role>             <!-- End role 'Member' -->
-        <role description="Only for the elite">
-          <name>Admin</name>
-          <permission description="Read rights for everything else">
-            <type>Read</type>
-            <target type="object">Sunday</target>
-            <target type="object">Saturday</target>
+          <permission>
+            <type>Delete</type>
+            <target type="objectGroup">Everything</target>
           </permission>
-          <permission description="Write rights for everything">
-            <type>Write</type>
-            <target type="objectGroup">Days</target>
-            <target type="objectGroup">Dwarfs</target>
+          <permission>
+            <type>Publish</type>
+            <target type="objectGroup">Everything</target>
           </permission>
         </role>             <!-- End role 'Admin' -->
+        <role description="This guy likes to think he has all the power">
+          <name>Editor</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+          </permission>
+          <permission>
+            <type>Delete</type>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+        </role>             <!-- End role 'Editor' -->
+        <role description="These people can read and write some things">
+          <name>Writer</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+        </role>             <!-- End role 'Writer' -->
+        <role description="Dunno what these folks are doing">
+          <name>Peon</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+        </role>             <!-- End role 'Peon' -->
+        <role description="Power behind the throne">
+          <name>Accountant</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Secrets</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="object">finance.txt</target>
+            <target type="object">records.txt</target>
+          </permission>
+        </role>             <!-- End role 'Accountant' -->
       </roles>
       <subjects>
         <subject>
-          <name>Alice</name>
+          <name>Alice1</name>
           <role>Admin</role>
         </subject>
         <subject>
-          <name>Bob</name>
-          <role>Member</role>
+          <name>Eve</name>
+          <role>Editor</role>
+        </subject>
+        <subject>
+          <name>Diana</name>
+          <role>Writer</role>
         </subject>
         <subject>
           <name>Charlie</name>
-          <role>Member</role>
+          <role>Writer</role>
         </subject>
         <subject>
-          <name>Diana</name>
-        </subject>
-      </subjects>
-    </data>
-    <policies>
-      <hierarchy>
-        <if>Admin</if>
-        <then>Member</then>
-      </hierarchy>
-      <delegation>
-        <if>Admin</if>
-        <from>Work</from>
-        <then>Admin</then>
-        <to>School</to>
-      </delegation>
-    </policies>
-  </entity>                 <!-- End school entity -->
-  <entity name="Work">      <!-- Begin work entity -->
-    <data>
-      <objects>
-        <objectGroup><name>Files</name></objectGroup>
-        <objectGroup><name>Pictures</name></objectGroup>
-        <object>
-          <group>Files</group>
-          <name>biography.pdf</name>
-        </object>
-        <object>
-          <group>Files</group>
-          <name>expenses.txt</name>
-        </object>
-        <object>
-          <group>Pictures</group>
-          <name>beach.png</name>
-        </object>
-        <object>
-          <group>Pictures</group>
-          <name>party.jpg</name>
-        </object>
-        <object>
-          <group>Pictures</group>
-          <name>selfie.mov</name>
-        </object>
-      </objects>
-      <roles>
-        <role description="Everyone gets put into this role">
-          <name>User</name>
-          <permission description="Read rights for Pictures all Users">
-            <type>Read</type>
-            <target type="objectGroup">Pictures</target>
-            <target type="object">biography.pdf</target>
-          </permission>
-          <permission>
-            <type>Delete</type>
-            <target type="objectGroup">Pictures</target>
-          </permission>
-        </role>             <!-- End role 'User' -->
-        <role description="Only for the elite">
-          <name>Admin</name>
-          <permission description="Read rights for everything">
-            <type>Read</type>
-            <target type="objectGroup">Pictures</target>
-            <target type="objectGroup">Files</target>
-          </permission>
-          <permission description="Write rights for everything">
-            <type>Write</type>
-            <target type="objectGroup">Pictures</target>
-            <target type="objectGroup">Files</target>
-          </permission>
-          <permission>
-            <type>Delete</type>
-            <target type="objectGroup">Pictures</target>
-            <target type="objectGroup">Files</target>
-          </permission>
-        </role>             <!-- End role 'Admin' -->
-      </roles>
-      <subjects>
-        <subject>
-          <name>Eve</name>
-          <role>Admin</role>
+          <name>Bob</name>
+          <role>Peon</role>
         </subject>
         <subject>
           <name>Frank</name>
-          <role>User</role>
+          <role>Peon</role>
         </subject>
         <subject>
-          <name>Diana</name>
-          <role>Admin</role>
+          <name>George</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>Arnold</name>
+          <role>Accountant</role>
         </subject>
       </subjects>
     </data>
     <policies>
       <hierarchy>
         <if>Admin</if>
-        <then>User</then>
+        <then>Editor</then>
       </hierarchy>
-      <inference>
-        <if>Pictures</if>
-        <then>Files</then>
-      </inference>
+      <hierarchy>
+        <if>Editor</if>
+        <then>Writer</then>
+      </hierarchy>
+      <hierarchy>
+        <if>Accountant</if>
+        <then>Peon</then>
+      </hierarchy>
+      <delegation>
+        <if>SuperAdmin</if>
+        <from>HQ</from>
+        <then>Admin</then>
+        <to>E1</to>
+      </delegation>
+      <delegation>
+        <if>Editor</if>
+        <from>E2</from>
+        <then>Writer</then>
+        <to>E1</to>
+      </delegation>
+      <delegation>
+        <if>Admin</if>
+        <from>E3</from>
+        <then>Writer</then>
+        <to>E1</to>
+      </delegation>
+      <delegation>
+        <if>Peon</if>
+        <from>E6</from>
+        <then>Admin</then>
+        <to>E1</to>
+      </delegation>
     </policies>
-  </entity>
+  </entity>                 <!-- End E1 entity -->
+  <entity name="E2">
+    <data>
+      <objects>
+        <objectGroup><name>Dwarfs</name></objectGroup>
+        <objectGroup><name>Days</name></objectGroup>
+        <objectGroup><name>Pictures</name></objectGroup>
+        <objectGroup><name>Printers</name></objectGroup>
+        <objectGroup><name>Secrets</name></objectGroup>
+        <objectGroup><name>Everything</name></objectGroup>
+        <object><group>Everything</group><group>Dwarfs</group><name>Grumpy2</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Happy2</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Sleepy2</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Bashful2</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Sneezy2</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Dopey2</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Doc2</name></object>
+        <object><group>Everything</group><group>Days</group><name>Sunday2</name></object>
+        <object><group>Everything</group><group>Days</group><name>Monday2</name></object>
+        <object><group>Everything</group><group>Days</group><name>Tuesday2</name></object>
+        <object><group>Everything</group><group>Days</group><name>Wednesday2</name></object>
+        <object><group>Everything</group><group>Days</group><name>Thursday2</name></object>
+        <object><group>Everything</group><group>Days</group><name>Friday2</name></object>
+        <object><group>Everything</group><group>Days</group><name>Saturday2</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture12</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture22</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture32</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture42</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture52</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture62</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture72</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer12</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer22</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer32</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer42</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer52</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer62</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer72</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>finance.txt</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>records.txt</name></object>
+      </objects>
+      <roles>
+        <role description="This is Admin">
+          <name>Admin</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Delete</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Publish</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+        </role>             <!-- End role 'Admin' -->
+        <role description="This guy likes to think he has all the power">
+          <name>Editor</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+          </permission>
+          <permission>
+            <type>Delete</type>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+        </role>             <!-- End role 'Editor' -->
+        <role description="These people can read and write some things">
+          <name>Writer</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+        </role>             <!-- End role 'Writer' -->
+        <role description="Dunno what these folks are doing">
+          <name>Peon</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+        </role>             <!-- End role 'Peon' -->
+        <role description="Power behind the throne">
+          <name>Accountant</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Secrets</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="object">finance.txt</target>
+            <target type="object">records.txt</target>
+          </permission>
+        </role>             <!-- End role 'Accountant' -->
+      </roles>
+      <subjects>
+        <subject>
+          <name>Bob</name>
+          <role>Admin</role>
+        </subject>
+        <subject>
+          <name>Alice</name>
+          <role>Editor</role>
+        </subject>
+        <subject>
+          <name>Diana2</name>
+          <role>Writer</role>
+        </subject>
+        <subject>
+          <name>Eve</name>
+          <role>Writer</role>
+        </subject>
+        <subject>
+          <name>Charlie2</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>Frank</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>George2</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>Arnold</name>
+          <role>Accountant</role>
+        </subject>
+      </subjects>
+    </data>
+    <policies>
+      <hierarchy>
+        <if>Admin</if>
+        <then>Editor</then>
+      </hierarchy>
+      <hierarchy>
+        <if>Editor</if>
+        <then>Writer</then>
+      </hierarchy>
+      <hierarchy>
+        <if>Accountant</if>
+        <then>Peon</then>
+      </hierarchy>
+      <delegation>
+        <if>SuperAdmin</if>
+        <from>HQ</from>
+        <then>Admin</then>
+        <to>E2</to>
+      </delegation>
+      <delegation>
+        <if>Editor</if>
+        <from>E3</from>
+        <then>Writer</then>
+        <to>E2</to>
+      </delegation>
+      <delegation>
+        <if>Admin</if>
+        <from>E3</from>
+        <then>Editor</then>
+        <to>E2</to>
+      </delegation>
+      <delegation>
+        <if>Peon</if>
+        <from>E5</from>
+        <then>Editor</then>
+        <to>E2</to>
+      </delegation>
+    </policies>
+  </entity>                 <!-- End E2 entity -->
+  <entity name="E3">
+    <data>
+      <objects>
+        <objectGroup><name>Dwarfs</name></objectGroup>
+        <objectGroup><name>Days</name></objectGroup>
+        <objectGroup><name>Pictures</name></objectGroup>
+        <objectGroup><name>Printers</name></objectGroup>
+        <objectGroup><name>Secrets</name></objectGroup>
+        <objectGroup><name>Everything</name></objectGroup>
+        <object><group>Everything</group><group>Dwarfs</group><name>Grumpy3</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Happy3</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Sleepy3</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Bashful3</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Sneezy3</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Dopey3</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Doc3</name></object>
+        <object><group>Everything</group><group>Days</group><name>Sunday3</name></object>
+        <object><group>Everything</group><group>Days</group><name>Monday3</name></object>
+        <object><group>Everything</group><group>Days</group><name>Tuesday3</name></object>
+        <object><group>Everything</group><group>Days</group><name>Wednesday3</name></object>
+        <object><group>Everything</group><group>Days</group><name>Thursday3</name></object>
+        <object><group>Everything</group><group>Days</group><name>Friday3</name></object>
+        <object><group>Everything</group><group>Days</group><name>Saturday3</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture13</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture23</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture33</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture43</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture53</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture63</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture73</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer13</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer23</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer33</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer43</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer53</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer63</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer73</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>finance.txt</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>records.txt</name></object>
+      </objects>
+      <roles>
+        <role description="This is Admin">
+          <name>Admin</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Delete</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Publish</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+        </role>             <!-- End role 'Admin' -->
+        <role description="This guy likes to think he has all the power">
+          <name>Editor</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+          </permission>
+          <permission>
+            <type>Delete</type>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+        </role>             <!-- End role 'Editor' -->
+        <role description="These people can read and write some things">
+          <name>Writer</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+        </role>             <!-- End role 'Writer' -->
+        <role description="Dunno what these folks are doing">
+          <name>Peon</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+        </role>             <!-- End role 'Peon' -->
+        <role description="Power behind the throne">
+          <name>Accountant</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Secrets</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="object">finance.txt</target>
+            <target type="object">records.txt</target>
+          </permission>
+        </role>             <!-- End role 'Accountant' -->
+      </roles>
+      <subjects>
+        <subject>
+          <name>Bob</name>
+          <role>Admin</role>
+        </subject>
+        <subject>
+          <name>Alice</name>
+          <role>Editor</role>
+        </subject>
+        <subject>
+          <name>Diana2</name>
+          <role>Writer</role>
+        </subject>
+        <subject>
+          <name>Eve</name>
+          <role>Writer</role>
+        </subject>
+        <subject>
+          <name>Charlie2</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>Frank</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>George2</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>Arnold</name>
+          <role>Accountant</role>
+        </subject>
+      </subjects>
+    </data>
+    <policies>
+      <hierarchy>
+        <if>Admin</if>
+        <then>Editor</then>
+      </hierarchy>
+      <hierarchy>
+        <if>Editor</if>
+        <then>Writer</then>
+      </hierarchy>
+      <hierarchy>
+        <if>Accountant</if>
+        <then>Peon</then>
+      </hierarchy>
+      <delegation>
+        <if>SuperAdmin</if>
+        <from>HQ</from>
+        <then>Admin</then>
+        <to>E3</to>
+      </delegation>
+      <delegation>
+        <if>Editor</if>
+        <from>E4</from>
+        <then>Writer</then>
+        <to>E3</to>
+      </delegation>
+      <delegation>
+        <if>Admin</if>
+        <from>E4</from>
+        <then>Peon</then>
+        <to>E3</to>
+      </delegation>
+      <delegation>
+        <if>Peon</if>
+        <from>E6</from>
+        <then>Editor</then>
+        <to>E3</to>
+      </delegation>
+    </policies>
+  </entity>                 <!-- End E3 entity -->
+  <entity name="E4">
+    <data>
+      <objects>
+        <objectGroup><name>Dwarfs</name></objectGroup>
+        <objectGroup><name>Days</name></objectGroup>
+        <objectGroup><name>Pictures</name></objectGroup>
+        <objectGroup><name>Printers</name></objectGroup>
+        <objectGroup><name>Secrets</name></objectGroup>
+        <objectGroup><name>Everything</name></objectGroup>
+        <object><group>Everything</group><group>Dwarfs</group><name>Grumpy4</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Happy4</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Sleepy4</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Bashful4</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Sneezy4</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Dopey4</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Doc4</name></object>
+        <object><group>Everything</group><group>Days</group><name>Sunday4</name></object>
+        <object><group>Everything</group><group>Days</group><name>Monday4</name></object>
+        <object><group>Everything</group><group>Days</group><name>Tuesday4</name></object>
+        <object><group>Everything</group><group>Days</group><name>Wednesday4</name></object>
+        <object><group>Everything</group><group>Days</group><name>Thursday4</name></object>
+        <object><group>Everything</group><group>Days</group><name>Friday4</name></object>
+        <object><group>Everything</group><group>Days</group><name>Saturday4</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture14</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture24</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture34</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture44</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture54</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture64</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture74</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer14</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer24</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer34</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer44</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer54</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer64</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer74</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>finance.txt</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>records.txt</name></object>
+      </objects>
+      <roles>
+        <role description="This is Admin">
+          <name>Admin</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Delete</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Publish</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+        </role>             <!-- End role 'Admin' -->
+        <role description="This guy likes to think he has all the power">
+          <name>Editor</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+          </permission>
+          <permission>
+            <type>Delete</type>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+        </role>             <!-- End role 'Editor' -->
+        <role description="These people can read and write some things">
+          <name>Writer</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+        </role>             <!-- End role 'Writer' -->
+        <role description="Dunno what these folks are doing">
+          <name>Peon</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+        </role>             <!-- End role 'Peon' -->
+        <role description="Power behind the throne">
+          <name>Accountant</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Secrets</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="object">finance.txt</target>
+            <target type="object">records.txt</target>
+          </permission>
+        </role>             <!-- End role 'Accountant' -->
+      </roles>
+      <subjects>
+        <subject>
+          <name>Bob</name>
+          <role>Admin</role>
+        </subject>
+        <subject>
+          <name>Alice</name>
+          <role>Editor</role>
+        </subject>
+        <subject>
+          <name>Diana2</name>
+          <role>Writer</role>
+        </subject>
+        <subject>
+          <name>Eve</name>
+          <role>Writer</role>
+        </subject>
+        <subject>
+          <name>Charlie2</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>Frank</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>George2</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>Arnold</name>
+          <role>Accountant</role>
+        </subject>
+      </subjects>
+    </data>
+    <policies>
+      <hierarchy>
+        <if>Admin</if>
+        <then>Editor</then>
+      </hierarchy>
+      <hierarchy>
+        <if>Editor</if>
+        <then>Writer</then>
+      </hierarchy>
+      <hierarchy>
+        <if>Accountant</if>
+        <then>Peon</then>
+      </hierarchy>
+      <delegation>
+        <if>SuperAdmin</if>
+        <from>HQ</from>
+        <then>Admin</then>
+        <to>E4</to>
+      </delegation>
+      <delegation>
+        <if>Editor</if>
+        <from>E1</from>
+        <then>Writer</then>
+        <to>E4</to>
+      </delegation>
+      <delegation>
+        <if>Admin</if>
+        <from>E1</from>
+        <then>Peon</then>
+        <to>E4</to>
+      </delegation>
+      <delegation>
+        <if>Peon</if>
+        <from>E2</from>
+        <then>Writer</then>
+        <to>E4</to>
+      </delegation>
+    </policies>
+  </entity>                 <!-- End E4 entity -->
+  <entity name="E5">
+    <data>
+      <objects>
+        <objectGroup><name>Dwarfs</name></objectGroup>
+        <objectGroup><name>Days</name></objectGroup>
+        <objectGroup><name>Pictures</name></objectGroup>
+        <objectGroup><name>Printers</name></objectGroup>
+        <objectGroup><name>Secrets</name></objectGroup>
+        <objectGroup><name>Everything</name></objectGroup>
+        <object><group>Everything</group><group>Dwarfs</group><name>Grumpy5</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Happy5</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Sleepy5</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Bashful5</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Sneezy5</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Dopey5</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Doc5</name></object>
+        <object><group>Everything</group><group>Days</group><name>Sunday5</name></object>
+        <object><group>Everything</group><group>Days</group><name>Monday5</name></object>
+        <object><group>Everything</group><group>Days</group><name>Tuesday5</name></object>
+        <object><group>Everything</group><group>Days</group><name>Wednesday5</name></object>
+        <object><group>Everything</group><group>Days</group><name>Thursday5</name></object>
+        <object><group>Everything</group><group>Days</group><name>Friday5</name></object>
+        <object><group>Everything</group><group>Days</group><name>Saturday5</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture15</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture25</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture35</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture45</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture55</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture65</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture75</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer15</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer25</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer35</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer45</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer55</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer65</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer75</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>finance.txt</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>records.txt</name></object>
+      </objects>
+      <roles>
+        <role description="This is Admin">
+          <name>Admin</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Delete</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Publish</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+        </role>             <!-- End role 'Admin' -->
+        <role description="This guy likes to think he has all the power">
+          <name>Editor</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+          </permission>
+          <permission>
+            <type>Delete</type>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+        </role>             <!-- End role 'Editor' -->
+        <role description="These people can read and write some things">
+          <name>Writer</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+        </role>             <!-- End role 'Writer' -->
+        <role description="Dunno what these folks are doing">
+          <name>Peon</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+        </role>             <!-- End role 'Peon' -->
+        <role description="Power behind the throne">
+          <name>Accountant</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Secrets</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="object">finance.txt</target>
+            <target type="object">records.txt</target>
+          </permission>
+        </role>             <!-- End role 'Accountant' -->
+      </roles>
+      <subjects>
+        <subject>
+          <name>Bob</name>
+          <role>Admin</role>
+        </subject>
+        <subject>
+          <name>Alice</name>
+          <role>Editor</role>
+        </subject>
+        <subject>
+          <name>Diana2</name>
+          <role>Writer</role>
+        </subject>
+        <subject>
+          <name>Eve</name>
+          <role>Writer</role>
+        </subject>
+        <subject>
+          <name>Charlie2</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>Frank</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>George2</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>Arnold</name>
+          <role>Accountant</role>
+        </subject>
+      </subjects>
+    </data>
+    <policies>
+      <hierarchy>
+        <if>Admin</if>
+        <then>Editor</then>
+      </hierarchy>
+      <hierarchy>
+        <if>Editor</if>
+        <then>Writer</then>
+      </hierarchy>
+      <hierarchy>
+        <if>Accountant</if>
+        <then>Peon</then>
+      </hierarchy>
+      <delegation>
+        <if>SuperAdmin</if>
+        <from>HQ</from>
+        <then>Admin</then>
+        <to>E5</to>
+      </delegation>
+      <delegation>
+        <if>Editor</if>
+        <from>E1</from>
+        <then>Writer</then>
+        <to>E5</to>
+      </delegation>
+      <delegation>
+        <if>Admin</if>
+        <from>E1</from>
+        <then>Peon</then>
+        <to>E5</to>
+      </delegation>
+      <delegation>
+        <if>Peon</if>
+        <from>E2</from>
+        <then>Writer</then>
+        <to>E5</to>
+      </delegation>
+    </policies>
+  </entity>                 <!-- End E5 entity -->
+  <entity name="E6">
+    <data>
+      <objects>
+        <objectGroup><name>Dwarfs</name></objectGroup>
+        <objectGroup><name>Days</name></objectGroup>
+        <objectGroup><name>Pictures</name></objectGroup>
+        <objectGroup><name>Printers</name></objectGroup>
+        <objectGroup><name>Secrets</name></objectGroup>
+        <objectGroup><name>Everything</name></objectGroup>
+        <object><group>Everything</group><group>Dwarfs</group><name>Grumpy6</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Happy6</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Sleepy6</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Bashful6</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Sneezy6</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Dopey6</name></object>
+        <object><group>Everything</group><group>Dwarfs</group><name>Doc6</name></object>
+        <object><group>Everything</group><group>Days</group><name>Sunday6</name></object>
+        <object><group>Everything</group><group>Days</group><name>Monday6</name></object>
+        <object><group>Everything</group><group>Days</group><name>Tuesday6</name></object>
+        <object><group>Everything</group><group>Days</group><name>Wednesday6</name></object>
+        <object><group>Everything</group><group>Days</group><name>Thursday6</name></object>
+        <object><group>Everything</group><group>Days</group><name>Friday6</name></object>
+        <object><group>Everything</group><group>Days</group><name>Saturday6</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture16</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture26</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture36</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture46</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture56</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture66</name></object>
+        <object><group>Everything</group><group>Pictures</group><name>picture76</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer16</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer26</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer36</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer46</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer56</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer66</name></object>
+        <object><group>Everything</group><group>Printers</group><name>printer76</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>finance.txt</name></object>
+        <object><group>Everything</group><group>Secrets</group><name>records.txt</name></object>
+      </objects>
+      <roles>
+        <role description="This is Admin">
+          <name>Admin</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Delete</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+          <permission>
+            <type>Publish</type>
+            <target type="objectGroup">Everything</target>
+          </permission>
+        </role>             <!-- End role 'Admin' -->
+        <role description="This guy likes to think he has all the power">
+          <name>Editor</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+          </permission>
+          <permission>
+            <type>Delete</type>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+        </role>             <!-- End role 'Editor' -->
+        <role description="These people can read and write some things">
+          <name>Writer</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Days</target>
+            <target type="objectGroup">Printers</target>
+          </permission>
+        </role>             <!-- End role 'Writer' -->
+        <role description="Dunno what these folks are doing">
+          <name>Peon</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Dwarfs</target>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="objectGroup">Pictures</target>
+          </permission>
+        </role>             <!-- End role 'Peon' -->
+        <role description="Power behind the throne">
+          <name>Accountant</name>
+          <permission>
+            <type>Read</type>
+            <target type="objectGroup">Secrets</target>
+          </permission>
+          <permission>
+            <type>Write</type>
+            <target type="object">finance.txt</target>
+            <target type="object">records.txt</target>
+          </permission>
+        </role>             <!-- End role 'Accountant' -->
+      </roles>
+      <subjects>
+        <subject>
+          <name>Bob</name>
+          <role>Admin</role>
+        </subject>
+        <subject>
+          <name>Alice1</name>
+          <role>Editor</role>
+        </subject>
+        <subject>
+          <name>Diana2</name>
+          <role>Writer</role>
+        </subject>
+        <subject>
+          <name>Eve</name>
+          <role>Writer</role>
+        </subject>
+        <subject>
+          <name>Charlie2</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>Frank</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>George2</name>
+          <role>Peon</role>
+        </subject>
+        <subject>
+          <name>Arnold</name>
+          <role>Accountant</role>
+        </subject>
+      </subjects>
+    </data>
+    <policies>
+      <hierarchy>
+        <if>Admin</if>
+        <then>Editor</then>
+      </hierarchy>
+      <hierarchy>
+        <if>Editor</if>
+        <then>Writer</then>
+      </hierarchy>
+      <hierarchy>
+        <if>Accountant</if>
+        <then>Peon</then>
+      </hierarchy>
+      <delegation>
+        <if>SuperAdmin</if>
+        <from>HQ</from>
+        <then>Admin</then>
+        <to>E6</to>
+      </delegation>
+      <delegation>
+        <if>Editor</if>
+        <from>E1</from>
+        <then>Writer</then>
+        <to>E6</to>
+      </delegation>
+      <delegation>
+        <if>Admin</if>
+        <from>E1</from>
+        <then>Peon</then>
+        <to>E6</to>
+      </delegation>
+      <delegation>
+        <if>Peon</if>
+        <from>E2</from>
+        <then>Writer</then>
+        <to>E6</to>
+      </delegation>
+    </policies>
+  </entity>                 <!-- End E6 entity -->
 </root>

@@ -617,7 +617,54 @@ A more interesting variant comprises multiple hierarchical inferences within an 
 Here we've defined a multi-level hierarchy that includes all administrators as managers and users, and includes all managers as users.
 This feature can be modified to indefinite complexity, depending on the needs of the organization and the number/relationship of the roles therein. \\
 
-\section{Task W7}
+\subsection{Attribute Inference}
+Attribute inference works in conjunction with logical objects to allow more powerful and flexible specification of objects, removing much of the need to assign them to multiple groups. It is a sort of hierarchy for object groups.
+Attribute inference was demonstrated in \textbf{W1}, but here are another couple of examples to show. Suppose for the sake of these examples that we have defined the object groups 'All', 'Files', 'Devices', 'Special', and 'Tools'.
+
+\subsubsection{Simple}
+The most basic form of inference is simply an inference of group membership, and can be implemented like so.
+\begin{lstlisting}
+<inference>
+    <if>Files</if>
+    <then>All</then>
+</inference>
+<inference>
+    <if>Devices</if>
+    <then>All</then>
+</inference>
+<inference>
+    <if>Devices</if>
+    <then>Tools</then>
+</inference>
+\end{lstlisting}
+Here we indicate that any objects in the 'Files' or 'Devices' groups should also be in the 'All' group. We also assign any objects in the 'Devices' group to the 'Tools' group as well. These rules prevent us from having to add as many \inlinecode{<group>} sub-elements to the objects as we define them.
+
+\subsubsection{Group Hierarchy}
+A more complex example might involve multiple levels of inference to fully establish all relationships.
+\begin{lstlisting}
+<inference>
+    <if>Files</if>
+    <then>All</then>
+</inference>
+<inference>
+    <if>Tools</if>
+    <then>All</then>
+</inference>
+<inference>
+    <if>Devices</if>
+    <then>Tools</then>
+</inference>
+<inference>
+    <if>Special</if>
+    <then>Files</then>
+</inference>
+\end{lstlisting}
+In this way we've established two divisions of the 'All' group: one that contains the 'Files' group which in turn contains 'Special'; and another that contains 'Tools', which itself contains 'Devices'. In this way any objects assigned to 'Special' or 'Devices' will also end up in 'All' without ever being explicitly linked to it!
+
+\task{C6}
+See the accompanying program \inlinecode{timeparse.py} for the full details of my timing program. Each policy file (1-4) was based on a different scenario: home, small business, several medium-sized entities, and many entities. The results are given below.
+
+\task{W7}
 Filler.
 
 \pagebreak

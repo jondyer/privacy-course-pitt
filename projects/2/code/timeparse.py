@@ -132,8 +132,6 @@ class Entity:
 
     def delegate(self):
         if self.delegated1:
-            self.delegated2 = True
-        elif self.delegated2:
             return
 
         for duh in self.deleg:
@@ -146,6 +144,7 @@ class Entity:
                 continue
 
             if not all_ents[fr].delegated1:
+                self.delegated1 = True
                 all_ents[fr].delegate()
 
             for s in self.subjects:                     # for each subject here

@@ -18,7 +18,7 @@
 \providecommand{\task}[1]{\section{Task #1}}
 \providecommand{\image}[1]{
     \begin{center}
-        \includegraphics[width=1.0\textwidth]
+        \includegraphics[width=0.8\textwidth]
             {#1}
     \end{center}
 }
@@ -665,9 +665,34 @@ In this way we've established two divisions of the 'All' group: one that contain
 See the accompanying program \inlinecode{timeparse.py} for the full details of my timing program. Each policy file (1-4) was based on a different scenario: home, small business, several medium-sized entities, and many entities. The results are given below.
 
 \task{W7}
-Filler.
+As mentioned above, the four example policy files were written to represent the full range of potential use cases for this system. Their complexity increases roughly exponentially, and they are described briefly as follows:
+\begin{itemize}\tightlist
+  \item policy1.xml -- A small, simple policy file for a single home computer for a family of 4
+  \item policy2.xml -- A slightly more complicated file for a small business with several employees
+  \item policy3.xml -- A larger policy file for several mid-sized entities utilizing more complex features
+  \item policy4.xml -- A very large file (roughly 8,000 lines) presenting a complicated series of entities utilizing all of the features heretofore discussed
+\end{itemize}
+The files were tested by repeating 100 times the following procedure (on each) and then averaging the results:
+\begin{enumerate}\tightlist
+  \item Parse the entire file and record the time taken to complete preprocessing
+  \item Query the engine with the standardized query ("Can Alice access timing.txt with write privilege?") and record time taken to receive response
+\end{enumerate}
+The results of 10 different repititions of this 100-iteration procedure are shown below both as a table and graphically. Note that the timing results for querying the enforcement engine were so small that I had to multiply by 100 in order for them to be visible on the chart (in other words, the engine is very fast once fully parsed!).
 
-\pagebreak
+\image{timing_chart}
+
+\image{timing_graph}
+
+It is clear that as the access control file complexity increases, so too does the time taken to parse the file (naturally). The runtime scales roughly linearly with the complexity of the file -- this is likely due to the data structures I chose to use when implementing the enforcement engine, which were certainly not optimal. However, notice that the time taken to return query results remained nearly constant. This seems to indicate that the limiting factor in performance is strictly in preprocessing, rather than enforcement. That performance impact could also be mitigated by keeping appropriate system state between uses and parsing ahead of time.
+Because much of the detail of my knowledge of $\RT$ is demonstrated in the first two sections of this paper, so I will include only the most relevant aspects and conclusions here:
+\begin{enumerate}
+  \item This language is clearly flexible and powerful enough to be used in a wide variety of circumstances. This may include anything from personal use (although the complexity might be a little overkill for most home users) to distributed enterprise usage. The $\RT$ family is truly a robust and promising option for access control in most if not all situations.
+  \item As my particular implementation shows, there is something of a learning curve associated with writing in $\RT$, but it seems to be worthwhile given the performance results. In my implementation at least, the complexity of the policies seemed to have \textbf{almost no noticeable impact} on the performance of the engine \textit{after} the preprocessing was complete. This suggests that a well-constructed engine that adds policies, users, roles, etc. in a piecemeal fashion could maintain sufficient system state to provide these kinds of rapid, constant-time results no matter how complex the associated policies/files.
+\end{enumerate}
+Given the above two items I would submit that this language (or a variant of it) is sufficiently scalable and flexible to be used in essentially any access control situation. What a thing.
+
+\bigskip
+
 
 \printbibliography[heading=bibintoc]
 

@@ -1,0 +1,136 @@
+\documentclass{article}
+\author{Jonathan Dyer}
+\title{CS 1699: Privacy in the Electronic Society \\
+        \textit{Project 3 -- Data Anonymization}}
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{enumitem}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{graphicx}
+\usepackage[backend=bibtex,type=alphabetical,sorting=ynt]{biblatex}
+\addbibresource{p3.bib}
+\newtheorem*{defi}{Definition}
+
+\usepackage[hidelinks]{hyperref}
+\usepackage{sectsty}
+\subsubsectionfont{\normalfont\itshape}
+
+% ============ USED FOR MY FORMAT ============
+\providecommand{\task}[1]{\section{Task #1}}
+\providecommand{\image}[1]{
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]
+            {#1}
+    \end{center}
+}
+\providecommand{\tightlist}{
+    \setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}
+}
+\providecommand{\inlinecode}{\texttt}
+
+% ============ USED FOR CODE LISTINGS ============
+\usepackage{listings}
+\usepackage[usenames,dvipsnames,svgnames]{xcolor}
+\definecolor{javagreen}{rgb}{0.25,0.5,0.35}
+\lstset{
+    basicstyle          = \footnotesize,
+    commentstyle        = \color{javagreen},
+    frame               = single,
+    language            = C,
+    stringstyle         = \color{orange},
+    numbers             = left,
+    showstringspaces    = false,
+    deletekeywords      = {len, max, format, min},
+    morekeywords        = {yield, function, then, do, to},
+    keywordstyle        = \color{blue},
+    mathescape
+}
+
+\setcounter{secnumdepth}{0} % sections are level 1
+
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+\pagebreak
+
+\task{W0}
+\subsection{Netflix Prize Data}
+For this project I selected the well-known Netflix prize dataset, acquired from \href{http://academictorrents.com/details/9b13183dc4d60676b773c9e2cd6de5e5542cee9a}{Academic Torrents} (see also \cite{NetflixData}). This is a set of over 100 million movie ratings that was provided publicly to facilitate a contest hosted by Netflix to improve their movie recommendation system. The movie preferences of nearly 500 thousand Netflix users are represented, with the database including (for each of the 17770 movies):
+\begin{enumerate}
+  \item The (randomly) assigned \inlinecode{CustomerID}s of users who rated that movie.
+  \item The ratings (on a 5-star scale) of each of those users for that movie.
+  \item The date that rating was given on.
+\end{enumerate}
+The data was collected from 1998 to 2005 and was released in 2006 with all personal identifying information having been purportedly removed \cite{NetflixFAQ}.
+
+\task{W1}
+This seemingly innocuous dataset actually has real implications for the privacy of those whose information is contained therein.
+What we are concerned with is \textit{not} whether everyone in the dataset has their privacy at risk -- that is almost certainly not the case. Rather we wish to see that \textit{some} (or even one) of the individuals in the set may have their privacy violated by the data contained in this release. This violation has been demonstrated in several academic papers, including \cite{narayanan2006break} and others.
+
+\subsubsection{Potentially Sensitive Information}
+The privacy violation in question is the public disclosure of any Netflix user's viewing history, including that content which the user has not publicly avowed consuming or given a public opinion on. While at first this may seem not to qualify as sensitive, consider the inferences that may be made about someone's political opinions, religious stance, or sexual preferences based on their strong (ostensibly private) ratings of media content with those or related themes. In an individual's workplace or certain social settings, these would all be considered sensitive issues, making the possibility of their public disclosure a gross violation of privacy. In this particular data set that makes the UserID in some way the sensitive information, because linking an individual to that would reveal the viewing history as discussed herewith.
+
+
+\subsubsection{Re-identification through Quasi-Identifiers}
+In this dataset, we consider that the following columns can act as quasi-identifiers:
+\begin{itemize}
+  \item \textbf{Movie Title}: The knowledge that someone has viewed a particular film (out of thousands) is somewhat identifying, in that it certainly restricts the possible set of users to which they belong (since likely no one has viewed all 17770 films in the dataset).
+  It is also relatively easy information for an adversary to acquire independently, especially if they are acquainted with the victim.
+  In particular, it is worth noting that the less popular the movie (say, not in the top 100 or even 500), the greater value it is in helping to identify a viewer, since less people overall have viewed that movie.
+  \item \textbf{User Rating}: The review a user has given to a particular movie can serve as a quasi-identifier, helping again to reduce the number of possible "anonymous" user IDs that might be associated with an individual. As with movie title, this information may be simple for an adversary to acquire (movie opinions are often freely shared, especially about popular or controversial films).
+  \item \textbf{Date Reviewed}: Information about when a user gave a movie a particular rating could be useful in restricting the search once more, since some users frequently choose to rate movies soon after they view them on Netflix. This information could be garnered again in a casual conversation, and so could quite feasibly be available side knowledge to a potential attacker.
+\end{itemize}
+The above quasi-identifiers have been used, in conjunction with publicly available data on \href{https://www.imdb.com/}{IMDb}, to de-anonymize some viewing histories from this very dataset. See \cite{narayanan2008robust} for more information.
+
+\task{C2}
+See the file \inlinecode{database\_setup.py} for a script that transforms this dataset into an SQLite database.
+This is then easily imported into the ARX Data Anonymization program \cite{prasser2014arx}, where it is straightforward to implement \textit{k-anonymity} for a given $k$ along with \textit{l-diversity} for desired $l$.
+This is done by indicating \inlinecode{UserID} as 'sensitive' and all other fields as 'quasi-identifying'.
+It is then possible to define hierarchies for each attribute so that they can be generalized during the anonymization process, and after selecting '3 anonymity' and 'distinct 2 diversity' as options we may anonymize the set, resulting in a set like the data in \textbf{W3}. See the next section for more details.
+
+\task{W3}
+A sample of the dataset generated by \textbf{C2} is included. It satisfies 3-anonymity on the quasi-identifiers above along with 2-diversity on the "rating" attribute, meaning that for any unique set of quasi-identifiers matching a given individual in the set, there are a minimum of 2 \textit{other} people that share those quasi-identifiers. Moreover, there are at least 2 different types of results in the "rating" column.
+\paragraph{Privacy Improvements} This dataset reveals less than the previous because a particular UserID may no longer be uniquely associated with a date and a particular rating on some movie. Now the exact rating is less certain and the date range is generalized, so that a user may fit into a larger category which reveals less potentially sensitive information about their entire viewing history.
+\paragraph{Remaining Disclosures} This is a simplified example, so in actuality the anonymity set for this data (when generalized as described) was much larger. However, there are still many ways that information may still be revealed, especially for a less popular film. Specifically, 2-diversity is not an especially strict privacy model to enforce. Just because there are two different sensitive values in some group of the dataset does not mean that it will be difficult to distinguish an individual from that group, especially if the ratings are very different and the adversary knows generally how the target feels about the movie in question.
+Consider the following example chart modeled after the transformed (anonymized) data. Although it technically satisfies the criteria above, it is clear that a casual conversation with an individual about the movie \textit{Dinosaur Planet} (MovieID \inlinecode{1}) could distinguish which of the three userIDs belongs to them.
+
+\image{sample}
+
+Thus we see that this privacy model is not perfect. While it does obscure the ranking that a user gave to a particular film and the date it occurred, it does \textit{not} hide the fact that the users with those IDs watched the movie, at least enough to want to \textit{leave a rating}. So existence privacy (or \inlinecode{message flow privacy}) is not guaranteed, even if the user's opinions are kept private.
+
+\task{C4}
+See the accompanying file \inlinecode{single\_insight.py} for a script that indicates how many users disliked the movie \textit{Dinosaur Planet} (MovieID \inlinecode{1}). Note that this script supposes that \inlinecode{database\_setup.py} has already been run on the appropriate dataset, and that relative pathnames are constant. This script accesses the SQLite database and queries it for the selected information. It is easy to modify to retrieve other information, or information about different movies as well. It returns an integer which answers the question "How many users gave the movie 'Dinosaur Planet' a rating of 1 star?" (The response for this script should be '28'.)
+
+\task{W5}
+The above insight -- a count of how many users hated \textit{Dinosaur Planet} -- does not satisfy differential privacy. Recall that for any two neighboring datasets $D$ and $D'$ (i.e. $D'$ can be obtained from $D$ by changing one single tuple), we have the following definition:
+
+\begin{defi}
+A randomized algorithm $A$ satisfies $\varepsilon$-differential privacy, iff for any two neighboring datasets $D$ and $D'$ and for any output $O$ of $A$,
+$$ \frac{Pr(A(D) = O)}{Pr(A(D') = O)} \leq exp(\varepsilon) $$
+\end{defi}
+So we see that an attacker should not be able to tell the difference between these two datasets with probability above some certain bound, or put another way, the result of the query shouldn't depend too strongly on any particular tuple in the input \cite{xiaoDP}. The raw count data returned by the \inlinecode{single\_insight.py} script is sensitive to the presence or absence of any single user. That is, for an attacker who has knkowledge of the other rows in $D$, computing a sum on the database $D'$ will reveal exactly what the extra (or missing) individual's data is. Thus, the left hand side of the equation above would not fit below any reasonably small parameter $\varepsilon$.
+
+\task{C6}
+See the accompanying file \inlinecode{single\_insight\_DP.py} for a script that indicates how many users disliked the movie \textit{Dinosaur Planet} (MovieID \inlinecode{1}). Note that this script supposes that \inlinecode{database\_setup.py} has already been run on the appropriate dataset, and that relative pathnames are constant. \par
+ \\
+In the given version of this script, I use the $\varepsilon$ value of $ln(3)$, giving a scale parameter of $\frac{1}{\varepsilon} = \frac{1}{ln(3)}$ for the random Laplacian noise. This can of course be changed -- I chose this value because it matches the differential privacy of a \textbf{randomized response} algorithm, and seemed like a good example value.
+
+\task{W7}
+Several results of the improved DP script are shown below, satisfying $\varepsilon$-differential privacy for $\varepsilon = ln(3)$ in this case. This is achieved by first noticing that a function that returns the result of a counting query has $l_1$-sensitivity of 1 (as defined in the fantastic privacy resource \cite{dwork2014algorithmic}). This sensitivity indicates that adding noise scaled to $\frac{1}{\varepsilon}$ to our result will provide the desired $\varepsilon$-differential privacy. \par
+ \\
+This method protects users more than \textbf{C4} because now for any given dataset $D$ with some user in it, the probability that the query (i.e. algorithm $A$ in our definition) will return some result is no more than the probability the dataset $D'$ (without the user) will return the same result, scaled by a factor of $exp(\varepsilon)$. In other words, it is much harder to tell (depending on the parameter $\varepsilon$) whether or not a given individual is in a dataset or not, protecting that individual's privacy more than in the naive implementation.
+
+\image{DP_results}
+
+Finally, it is worth noting that each time this query result is returned, \textit{more information} is returned, and never will somehow \textit{less} information be leaked in total (as noted very well in \cite{greenDP}). Thus, some value of $\varepsilon$ that is robust or provides some differential privacy for a single query may \textbf{not} be sufficient for repeated queries of the same type.
+
+\bigskip
+
+
+\printbibliography[heading=bibintoc]
+
+\end{document}
